@@ -8,7 +8,7 @@ if(!(exists $ENV{'SL1P_BIN'} && defined $ENV{'SL1P_BIN'})) {
 	exit;
 }
 
-$bin = $ENV{'SL1P_BIN'};
+my $bin = $ENV{'SL1P_BIN'};
 chdir($bin);
 #install local cutadapt
 print "###################INSTALLING CUTADAPT v1.8.1###################\n";
