@@ -33,6 +33,6 @@ if (! -e 'master.zip') {
 	print "wget https://github.com/najoshi/sickle/archive/master.zip\n";
 	`wget https://github.com/najoshi/sickle/archive/master.zip`;
 }
-print "[sl1p]unzip -zxvf master.zip\n";
-`tar -zxvf master.zip`;
+print "[sl1p]unzip master.zip\n";
+`unzip master.zip`;
 chdir('..');
