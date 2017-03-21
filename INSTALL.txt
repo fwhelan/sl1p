@@ -1,0 +1,35 @@
+sl1p (pronounced slip)
+----------------------
+
+Installation instructions:
+        -Change directory to the folder with this readme file
+        -Export environment variable:
+                echo "export SL1P_DB=<path to current directory>/db/" >> $HOME/.bashrc
+                echo "export SL1P_BIN=<path to current directory>/bin/" >> $HOME/.bashrc 
+        or use setenv for TCSH shells:
+                setenv SL1P_DB=/home/slip_user/repos/slip/db
+                setenv SL1P_BIN=/home/slip_user/repos/slip/bin
+        -Run the SETUP.pl pipeline to install most of the necessary software:
+                perl SETUP.pl
+        -Install any necessary databases in SL1P_DB as explained here http://qiime.org/home_static/dataFiles.html:
+                * Greengenes 2011 (default)
+                * Greengenes 2013 (13_8)
+                * Silva 111 
+	-Additional requirements (default settings):
+		* QIIME (>=1.6.0) (pip install qiime)
+			* rdp-classifier (see QIIME installation notes)
+			* usearch-61 (see QIIME installation notes)
+		* biom tools (pip install numpy; pip install biom-format)
+		* PANDAseq (>=2.9) (sudo apt-add-repository ppa:neufeldlab/ppa && sudo apt-get update && sudo apt-get install pandaseq)
+		* perl's Switch module (sudo apt-get install libswitch-perl)
+		* R packages: 	phyloseq
+				knitr
+				phytools
+				ggplot2
+				cowplot
+				rmarkdown
+		* pandoc (sudo apt-get install pandoc)
+
+Requirements (full functionality):
+	* dnaclust
+	* uparse (see http://drive5.com)
