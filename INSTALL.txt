@@ -3,7 +3,7 @@ sl1p (pronounced slip)
 
 Installation instructions:
         -Change directory to the folder with this readme file
-        -Export environment variable:
+	-Export environment variable:
                 echo "export SL1P_DB=<path to current directory>/db/" >> $HOME/.bashrc
                 echo "export SL1P_BIN=<path to current directory>/bin/" >> $HOME/.bashrc 
         or use setenv for TCSH shells:
