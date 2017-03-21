@@ -1,9 +1,14 @@
 # /usr/bin/perl -w
 #Author: Fiona J Whelan <whelanfj@mcmaster.ca>
 #Last Modified Date: March 21 2017
+use strict; use warnings;
+
+if(!(exists $ENV{'SL1P_BIN'} && defined $ENV{'SL1P_BIN'})) {
+	print "SL1P_BIN undefined; please set environment variable and try again.\n";
+	exit;
+}
 
 $bin = $ENV{'SL1P_BIN'};
-
 chdir($bin);
 #install local cutadapt
 print "###################INSTALLING CUTADAPT v1.8.1###################\n";
@@ -31,4 +36,3 @@ if (! -e 'master.zip') {
 print "tar -zxvf master.zip\n";
 `tar -zxvf master.zip`;
 chdir('..');
-exit;
