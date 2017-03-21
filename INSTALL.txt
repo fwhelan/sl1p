@@ -9,7 +9,8 @@ Installation instructions:
         or use setenv for TCSH shells:
                 setenv SL1P_DB=/home/slip_user/repos/slip/db
                 setenv SL1P_BIN=/home/slip_user/repos/slip/bin
-        -Run the SETUP.pl pipeline to install most of the necessary software:
+        -source ~/.bashrc
+	-Run the SETUP.pl pipeline to install most of the necessary software:
                 perl SETUP.pl
         -Install any necessary databases in SL1P_DB as explained here http://qiime.org/home_static/dataFiles.html:
                 * Greengenes 2011 (default)
