@@ -12,12 +12,12 @@ Installation instructions:
         -source ~/.bashrc
 	-Run the SETUP.pl pipeline to install most of the necessary software:
                 perl SETUP.pl
-        -Install any necessary databases in SL1P_DB as explained here http://qiime.org/home_static/dataFiles.html:
+        -Install & unzip any necessary databases in SL1P_DB as explained here http://qiime.org/home_static/dataFiles.html:
                 * Greengenes 2011 (default)
                 * Greengenes 2013 (13_8)
                 * Silva 111 
 	-Additional requirements (default settings):
-		* QIIME (>=1.6.0) (pip install qiime)
+		* QIIME (>=1.6.0) (http://qiime.org/install/alternative.html)
 			* rdp-classifier (see QIIME installation notes)
 			* usearch-61 (see QIIME installation notes)
 		* biom tools (pip install numpy; pip install biom-format)
