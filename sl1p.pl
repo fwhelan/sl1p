@@ -1082,6 +1082,7 @@ for($a = 0; $a < $#fofns+1; $a++) {
 		}
 		$in=~/.*\/(.*?_[ACGT]*?_L\d{3}_R\d_\d{3}\.fastq(.gz|))$/;
 		my $path = $1;
+		print $path."\n";
 		my $out = "pandaseq_logs$a/$path";
 		#cutadapt
 		if ($in=~/.*_R1_.*/) {
@@ -1119,6 +1120,7 @@ print LOG "###############################################################\n";
 my @sample_names = (); my @orig_reads = (); my @post_pandaseq = (); my @post_cutadapt = (); my @post_sickle = ();
 my $samplef; my $sampler; my $barcodef; my $barcoder;
 my $fwd; my $rev;
+my $barco;
 for($b = 0; $b < $#fofns+1; $b++) {
 	my $dir = "pandaseq_logs$b";
 	chdir($dir);
@@ -1162,7 +1164,7 @@ for($b = 0; $b < $#fofns+1; $b++) {
 		$samplef=~s/-|\+|\s/\./g;
 		print $samplef."\n";
 		print MAPF $samplef."\t".$barcodef."\tCCTACGGGAGGCAGCAG\t$proj\n";
-		my $barco = length $barcodef;
+		$barco = length $barcodef;
 		#Run pandaseq cmd
 		$fwd=~/([^\/]+?)_L001_R1_001\.fastq(.gz|)/;
 		my $fastq = $1.".fastq";
@@ -1524,7 +1526,6 @@ print LOG "###############################################################\n";
 #Setup variables
 $mapf = "map_".$proj.".txt";
 $fast = $proj.".fna";
-my $barco;
 if ($numruns == 1) {
 	$barco = $barco; #6;
 } elsif ($numruns <= 4) {

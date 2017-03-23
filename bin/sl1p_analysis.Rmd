@@ -1,0 +1,222 @@
+#Sl1p Preliminary Analysess
+##Author: Fiona J. Whelan
+###	 whelanfj@mcmaster.ca
+```{r: load libraries, include=FALSE}
+#System call: R -e "params= list( otutable='otu_table_rdp-training_gg2011_n1_noRoot.txt', mapfile='../<map-file>',trefile='gg2011_97_pruned.tre',pwd='<path-to-sl1p-picked_otu-out    put-directory>', L6file='wf_taxa_summary_rdp-training_gg2011_n1_noRoot/otu_table_rdp-training_gg2011_n1_noRoot_L6.txt', L2file='wf_taxa_summary_rdp-training_gg2011/otu_table_rdp    -training_gg2011_L2.txt', libstats='library_stats_rdp-training_gg2011_n1_noRoot.txt'); rmarkdown::render('sl1p_analysis.Rmd')"
+library(phytools)
+library(phyloseq)
+library(ggplot2)
+library(cowplot)
+library(hash)
+```
+
+```{r: get user input, include=FALSE}
+#Get user input
+otuFile <- paste(params$pwd,"/",params$otutable, sep="")
+otuFile
+mapFile <- paste(params$pwd,"/",params$mapfile, sep="")
+mapFile
+treFile <- paste(params$pwd,"/",params$trefile, sep="")
+treFile
+L2File <- paste(params$pwd,"/",params$L2file, sep="")
+L2File
+L6File <- paste(params$pwd, "/",params$L6file, sep="")
+L6File
+libStats <- paste(params$pwd, "/", params$libstats, sep="")
+libStats
+```
+
+```{r: correct phylogeny, include=FALSE}
+####Load and re-write a corrected phylogeny.
+treefile<-read.newick(treFile)
+treefile<-collapse.singles(treefile)
+write.tree(treefile, file = treFile)
+```
+
+####Load phyloseq object
+```{r: load phyloseq object, include=FALSE}
+qd <- import_qiime(otuFile, mapFile, treFile)
+```
+
+```{r: load phyloseq object2}
+qd
+```
+
+```{r: function, include=FALSE}
+#Taxa function for showing Root
+myColours <- function(x) {
+	h <- hash()
+	h["Root;Other"] = "red"
+	#Make a vector of colours to return
+	colours <- character(0)
+	for(i in 1:length(x)) {
+		col <- h[[x[i]]]
+		if(is.null(col)) {
+			col <- "gray"
+		}
+		colours <- c(colours, col)
+	}
+	return(colours)
+}
+#Taxa function for showing all taxa
+myColours2 <- function(x) {
+	colours <- c("#02b6d3","#668400","#f1bc8c","#e58eff","#76b000","#ffa4e4","#bf4200","#c0019a","#c452d7","#feb873","#922d4f","#763cc2","#9a3cc2","#ec0078","#c8cb82","#bc6c00","#ff7d99","#ff7bb4","#cb88a5","#63c9ff","#af003a","#b77668","#9fb500","#006aaf","#ff5245","#c00067","#5fdabb","#f7bc5b","#913412","#ffa477","#009a2a","#01b97b","#de0042","#109eff","#f07312","#816190","#f11067","#a11b2d","#835d00","#8857e0","#fd59d2","#a80225","#91d86a","#019d6d","#eb2ea5","#62409a","#285d35","#007b19","#31e27c","#723c89","#006826","#ff8845","#ffab9a","#a2aeff","#f45a2b","#ff3d54","#7b4429","#0294e5","#4343b6","#1b4eaa","#96d68b","#ff7369","#cb2d10","#74da9d","#dd7300","#843c41","#81411c","#ff68b4","#4fbf36","#f3b3de","#c3cd65","#736a00","#ff73ef","#ff9e37","#8f1396","#ff9fab","#8486ff","#9d175e","#957a00","#385e00","#978b56","#025eb5","#9c3100","#00714c","#5173fe","#008a77","#cc9000","#d0a400","#b70072","#d10090","#86336c","#02a4ae","#63dd8f","#e1c28e","#8d3729","#1b5588","#524b85","#00b8ff","#cea7ff","#ff6e74")
+	if(x < 100) {
+		col <- colours[1:x-1]
+		col <- c(col, "gray")
+	} else {
+		y <- as.integer(x/100)
+		z <- x-(y*100)
+		col <- rep(colours, x/y)
+		co2 <- colours[1:z-1]
+		col <- c(col, co2, "gray")
+	}
+	return(col)
+}
+```
+
+####Observe data for non-bacterial contamination
+```{r: unfil-taxa, fig.width=15, fig.height=10}
+L2 <- read.table(L2File, sep="\t", header=TRUE, row.names=1)
+L2 <- t(L2)
+#Order by abundance
+L2 <- L2[,order(colSums(L2), decreasing=TRUE)]
+#Change any individual values <1.0% to 0
+L2[L2<0.01] <- 0
+#Remove any taxa that now sum to 0
+L2 <- L2[,colSums(L2)>0]
+#Add an Others column
+L2 <- as.data.frame(L2)
+L2[,"Taxa < 1%"] <- 1-rowSums(L2)
+#Assign colours using function
+colours <- myColours(colnames(L2))
+#Plot
+df <- NULL
+for (i in 1:dim(L2)[2]){
+        tmp <- data.frame(row.names=NULL, Sample=rownames(L2), Taxa=rep(colnames(L2)[i], dim(L2)[1]), Value=L2[,i])
+        if(i==1){df <- tmp} else {df <- rbind(df, tmp)}
+}
+p <- ggplot(df, aes(Sample,Value,fill=Taxa))
+p <- p + geom_bar(stat="identity")
+p <- p + theme_bw()
+p <- p + ylab("Proportions")
+p <- p + scale_fill_manual(values=colours)
+p <- p + scale_y_continuous(expand = c(0,0))
+p <- p + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+p <- p + guides(fill=guide_legend(ncol=1))
+p
+```
+
+####Observe filtered sequencing depth
+```{r: library stats, echo=FALSE, warning=FALSE}
+cat(readLines(libStats), sep = '\n')
+```
+
+####Output taxonomic summary of the data
+```{r: taxa, fig.width=15, fig.height=10}
+L6 <- read.table(L6File, sep="\t", header=TRUE, row.names=1)
+L6 <- t(L6)
+#Order by abundance
+L6 <- L6[,order(colSums(L6), decreasing=TRUE)]
+#Change any individual values <1.0% to 0
+L6[L6<0.01] <- 0
+#Remove any taxa that now sum to 0
+L6 <- L6[,colSums(L6)>0]
+#Add an Others column
+L6 <- as.data.frame(L6)
+L6[,"Taxa < 1%"] <- 1-rowSums(L6)
+#Assign colours using function
+colours <- myColours2(ncol(L6))
+#Plot
+df <- NULL
+for (i in 1:dim(L6)[2]){
+	tmp <- data.frame(row.names=NULL, Sample=rownames(L6), Taxa=rep(colnames(L6)[i], dim(L6)[1]), Value=L6[,i])
+	if(i==1){df <- tmp} else {df <- rbind(df, tmp)}
+}
+p <- ggplot(df, aes(Sample,Value,fill=Taxa))
+p <- p + scale_fill_manual(values=colours)
+p <- p + geom_bar(stat="identity")
+p <- p + theme_bw()
+p <- p + ylab("Proportions")
+p <- p + scale_y_continuous(expand = c(0,0))
+p <- p + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+p <- p + guides(fill=guide_legend(ncol=1))
+p
+```
+
+####Do proportional normalization
+Code a modified form of that supplied in the supplemental data of Waste Not, Want No
+```{r: normalization1}
+normf = function(x) {
+  x/sum(x)
+}
+qd.norm = transform_sample_counts(qd, normf)
+```
+
+####Do rarefication normalization
+```{r: normalization2, message=FALSE}
+rare.depth = min(sample_sums(qd))
+qd.rare = rarefy_even_depth(qd, sample.size = rare.depth, rngseed=1414)
+```
+
+####Output alpha diversity metrics
+```{r: alpha}
+p1 <- plot_richness(qd, x="X.SampleID", measures=c("Shannon", "Simpson", "Chao1"))
+p1 <- p1 + ggtitle("Unadjusted Alpha Diversity scores")
+p1
+p2 <- plot_richness(qd.rare, x="X.SampleID", measures=c("Shannon", "Simpson", "Chao1"))
+p2 <- p2 + ggtitle(paste("Rarefied (n=",rare.depth,") Alpha Diversity scores", sep=""))
+p2
+#p <- plot_grid(p1, p2, labels=c("A", "B"), ncol = 1, nrow = 2)
+#p
+#ggsave(file="alpha.eps", p, scale=4) 
+```
+
+####Output beta diversity metrics
+```{r: beta, fig.width=20, fig.height=5}
+#Unadjusted
+dist_bray <- phyloseq::distance(qd, method = "bray")
+iMDS_bray <- ordinate(qd, "PCoA", distance = dist_bray)
+dist_unwe <- phyloseq::distance(qd, method = "unifrac")
+iMDS_unwe <- ordinate(qd, "PCoA", distance = dist_unwe)
+dist_weun <- phyloseq::distance(qd, method = "wunifrac")
+iMDS_weun <- ordinate(qd, "PCoA", distance = dist_weun)
+p1 <- plot_ordination(qd, iMDS_bray)
+p1 <- p1 + ggtitle(paste("Unadjusted Bray Curtis", sep=""))
+p1 <- p1 + geom_point(aes(color=X.SampleID), pch=16, size=3)
+p1 <- p1 + theme_bw()
+p2 <- plot_ordination(qd, iMDS_unwe)
+p2 <- p2 + ggtitle(paste("Unadjusted Unweighted Unifrac", sep=""))
+p2 <- p2 + geom_point(aes(color=X.SampleID), pch=16, size=3)
+p2 <- p2 + theme_bw()
+p3 <- plot_ordination(qd, iMDS_weun)
+p3 <- p3 + ggtitle(paste("Unadjusted Weighted Unifrac", sep=""))
+p3 <- p3 + geom_point(aes(color=X.SampleID), pch=16, size=3)
+p3 <- p3 + theme_bw()
+p <- plot_grid(p1, p2, p3, labels=c("A", "B", "C"), ncol=3, nrow=1)
+p
+#Rarefied
+Rdist_bray <- phyloseq::distance(qd.rare, method = "bray")
+RiMDS_bray <- ordinate(qd.rare, "PCoA", distance = Rdist_bray)
+Rdist_unwe <- phyloseq::distance(qd, method = "unifrac")
+RiMDS_unwe <- ordinate(qd.rare, "PCoA", distance = Rdist_unwe)
+Rdist_weun <- phyloseq::distance(qd.rare, method = "wunifrac")
+RiMDS_weun <- ordinate(qd.rare, "PCoA", distance = Rdist_weun)
+p4 <- plot_ordination(qd.rare, RiMDS_bray)
+p4 <- p4 + ggtitle(paste("Rarefied (n=",rare.depth,") Bray Curtis"))
+p4 <- p4 + geom_point(aes(color=X.SampleID), pch=16, size=3)
+p4 <- p4 + theme_bw()
+p5 <- plot_ordination(qd.rare, RiMDS_unwe)
+p5 <- p5 + ggtitle(paste("Rarefied (n=",rare.depth,") Unweighted Unifrac"))
+p5 <- p5 + geom_point(aes(color=X.SampleID), pch=16, size=3)
+p5 <- p5 + theme_bw()
+p6 <- plot_ordination(qd.rare, RiMDS_weun)
+p6 <- p6 + ggtitle(paste("Rarefied (n=",rare.depth,") Weighted Unifrac"))
+p6 <- p6 + geom_point(aes(color=X.SampleID), pch=16, size=3)
+p6 <- p6 + theme_bw()
+p <- plot_grid(p4, p5, p6, labels=c("A", "B", "C"), ncol = 3, nrow = 1)
+p
+#ggsave(file="beta.eps", p, scale=4) 
+```
+
+
