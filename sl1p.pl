@@ -1,10 +1,12 @@
 #! /usr/bin/perl -w
 use Switch;
+use strict; use warnings;
 #Author: Fiona J Whelan <whelanfj@mcmaster.ca>
-#Date: June 7th, 2013; December 9th, 2013; January 14th 2015; December 16th 2015; December 5th 2016
-$sl1p_ver = "4.1";
-$bin = $ENV{'SL1P_BIN'};
-$db = $ENV{'SL1P_DB'};
+#Last Modified Date: March 23 2017
+#License: GPL
+my $sl1p_ver = "4.1";
+my $bin = $ENV{'SL1P_BIN'};
+my $db = $ENV{'SL1P_DB'};
 if ((! defined $bin) && (! defined $db)) {
 	print "SL1P_BIN and SL1P_DB ENV variables are not initialized. Please see INSTALL.txt for details.\n";
 	exit;
@@ -20,9 +22,11 @@ if ((! defined $bin) && (! defined $db)) {
 #Usage: sl1p.pl <# of runs> <fofn for each run> <projectname>
 #		e.g. sl1p.pl 2 fofn1.txt fofn2.txt Fiona_Proj
 
+my $usage =  "\nUsage: sl1p.pl <# of runs> <fofn for each run> <projectname> [-r region] [-s seq info file] [-b barcode loca     tion] [-q quality filter] [-d taxonomy database] [-p OTU picking algorithm] [-c clustering threshold] [-l linkage] [-m chimera checking] [-t taxonomic assignment method] [-x timed results] [-u CPU threads] [-f force overwrite] \n";
+
 #Check if help flag used
-@vars = splice @ARGV;
-$search_for = "-h";
+my @vars = splice @ARGV;
+my $search_for = "-h";
 my ($h_index)= grep { $vars[$_] eq $search_for } 0..$#vars;
 if (defined($h_index)) {
 	print "\nsl1p.pl v$sl1p_ver Fiona J Whelan <whelanfj\@mcmaster.ca>\n";
@@ -47,8 +51,6 @@ if (defined($h_index)) {
         exit;
 }
 
-$usage =  "\nUsage: sl1p.pl <# of runs> <fofn for each run> <projectname> [-r region] [-s seq info file] [-b barcode location] [-q quality filter] [-d taxonomy database] [-p OTU picking algorithm] [-c clustering threshold] [-l linkage] [-m chimera checking] [-t taxonomic assignment method] [-x timed results] [-u CPU threads] [-f force overwrite] \n";
-
 #Check usage
 if (($#vars+1) < 3) {
         print "\nsl1p.pl v$sl1p_ver Fiona J Whelan <whelanfj\@mcmaster.ca>\n";
@@ -60,7 +62,7 @@ if (($#vars+1) < 3) {
 }
 
 #Save var input
-$numruns = $vars[0];
+my $numruns = $vars[0];
 if ($numruns !~/^\d+$/) {
 	print "The # of runs inputted ($numruns) does not appear to be a number.\n\n";
 	print $usage;
@@ -68,8 +70,8 @@ if ($numruns !~/^\d+$/) {
         print "\nExiting....\n";
         exit;
 }
-@fofns = [];
-for ($i = 1; $i <= $numruns; $i++) {
+my @fofns = [];
+for (my $i = 1; $i <= $numruns; $i++) {
         $fofns[$i-1] = $vars[$i];
         #ensure that file exists
         unless (-e $fofns[$i-1]) {
@@ -81,6 +83,7 @@ for ($i = 1; $i <= $numruns; $i++) {
         }    
 }
 #Check to be sure project name exists
+my $proj;
 if ($numruns+1 < $#vars+1) {
 	$proj = $vars[$numruns+1];
 	if ($proj=~/^-/) {
@@ -99,25 +102,25 @@ if ($numruns+1 < $#vars+1) {
 }
 
 #Setup log file
-@months = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
-($date, $min, $hour, $mday, $mon) = localtime();
+my @months = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
+(my $date, my $min, my $hour, my $mday, my $mon) = localtime();
 $date = $months[$mon]."".$mday."_".$hour."h".$min."m";
-$log = "log_sl1p_".$date.".log";
+my $log = "log_sl1p_".$date.".log";
 open LOG, ">", $log or die "$!\n";
 #Include full path in $log so that I don't have to trace what sub-folder I'm in.
-$pwd = `pwd`;
+my $pwd = `pwd`;
 chomp($pwd);
 $log = $pwd."/".$log;
 print LOG "sl1p V$sl1p_ver\n";
 print LOG "---------------\n";
-print LOG "<usage: sl1p.pl ". join(" ", @vars)." ".join(" ", @opts).">\n";
+print LOG "<usage: sl1p.pl ". join(" ", @vars)."\n";#.join(" ", @opts).">\n";
 #Setup err file
-$err = "log_sl1p_".$date.".err";
+my $err = "log_sl1p_".$date.".err";
 open ERR, ">", $err or die "$!\n";
 #Include full path in $err so that I don't have to trace what sub-folder I'm in.
 $err = $pwd."/".$err;
 #Save full path to a variable for time so I don't have to trace what sub-folder I'm in.
-$time_pwd = $pwd;
+my $time_pwd = $pwd;
 #Setup seq info file
 open SEQ, ">", "log_seq_info.txt" or die "$!\n";
 
@@ -127,25 +130,26 @@ open SEQ, ">", "log_seq_info.txt" or die "$!\n";
 print LOG "###############################################################\n";
 print LOG "#Check for user inputs\n";
 print LOG "###############################################################\n";
-$region = "v3";
-$seqinfofile = "";
-$barloc = "fwd";
-$mult_bc = 0;
-$qual = 30;
-$keep = "n";
-($fwd_primer, $rev_primer, $fwd_revcomp_primer, $rev_revcomp_primer, $overlap, $splitlib_min, $splitlib_max) = &getPrimers($barloc, $region);
-$gg = "gg2011";
-$clust = "abundantotu";
-$clustThres = "97";
-$linkage = "average";
-$taxon = "rdp-training";
-$time = "n";
-$force = 0;
-$threads = 1;
-$chimeraChecking = "y";
+my $region = "v3";
+my $seqinfofile = "";
+my $barloc = "fwd";
+my $mult_bc = 0;
+my $qual = 30;
+my $keep = "n";
+(my $fwd_primer, my $rev_primer, my $fwd_revcomp_primer, my $rev_revcomp_primer, my $overlap, my $splitlib_min, my $splitlib_max) = &getPrimers($barloc, $region);
+my @prim; my @fwd_primer; my @rev_primer; my @fwd_revcomp_primer; my @rev_revcomp_primer;
+my $gg = "gg2011";
+my $clust = "abundantotu";
+my $clustThres = "97";
+my $linkage = "average";
+my $taxon = "rdp-training";
+my $time = "n";
+my $force = 0;
+my $threads = 1;
+my $chimeraChecking = "y";
 
 if ($#vars+1 > $numruns+2) {
-	@opts = splice @vars, $numruns+2;
+	my @opts = splice @vars, $numruns+2;
 	#-r region
 	$search_for = "-r";
 	my ($r_index)= grep { $opts[$_] eq $search_for } 0..$#opts;
@@ -317,7 +321,7 @@ if ($#vars+1 > $numruns+2) {
 						exit;	
 					}
 				} elsif ($gg eq "gg2013") {
-					@files = ();
+					my @files = ();
 					$files[0] = "$db/gg_13_8_otus/rep_set/".$clustThres."_otus.fasta";
 					$files[1] = "$db/gg_13_8_otus/taxonomy/".$clustThres."_otu_taxonomy.txt";
 					foreach (@files) {
@@ -329,7 +333,7 @@ if ($#vars+1 > $numruns+2) {
 						}
 					}
 				} elsif ($gg eq "silva111") {
-					@files = ();
+					my @files = ();
 					$files[0] = "$db/Silva_111_post/taxonomy/".$clustThres."_Silva_111_taxa_map_RDP_6_levels.txt";
 					$files[1] = "$db/Silva_111_post/rep_set/".$clustThres."_Silva_111_rep_set.fasta";
 					foreach (@files) {
@@ -341,7 +345,7 @@ if ($#vars+1 > $numruns+2) {
 						}
 					}
 				} else { #all
-					@files = ();
+					my @files = ();
 					$files[0] = "$db/gg_otus_4feb2011/rep_set/gg_".$clustThres."_otus_4feb2011.fasta";
 					$files[1] = "$db/gg_13_8_otus/rep_set/".$clustThres."_otus.fasta";
 					$files[2] = "$db/gg_13_8_otus/taxonomy/".$clustThres."_otu_taxonomy.txt";
@@ -472,7 +476,9 @@ print LOG "###############################################################\n";
 print LOG "#Check for possible overwrites\n";
 print LOG "###############################################################\n";
 $pwd = `pwd`;
+my $cmd;
 chomp($pwd);
+my $otu_folder;
 if (($clust eq "all") && ($gg eq "all")) {
 	#abundantotu
 	$otu_folder = "picked_otus_abundantotu_gg2011";
@@ -926,7 +932,7 @@ if (($clust eq "all") && ($gg eq "all")) {
 		}
 	}
 }
-$splits_folder = "splits_dir/";
+my $splits_folder = "splits_dir/";
 chomp($splits_folder);
 if (-d $splits_folder) {
 	if ($force) {
@@ -961,6 +967,7 @@ print LOG "#Pre-check for software installations/version compatibility\n";
 print LOG "###############################################################\n";
 #region; #barloc; #mult_bc; 
 #$qual;
+my $exc;
 $exc = `$bin/sickle/sickle --version`;
 if ($exc!~/sickle version/) {
 	print "sickle is not installed; please run `perl SETUP.py` to install.\n";
@@ -1031,7 +1038,7 @@ if ($chimeraChecking eq "y") {
 print LOG "###############################################################\n";
 print LOG "#Record QIIME Information\n";
 print LOG "###############################################################\n";
-$info = `print_qiime_config.py`;
+my $info = `print_qiime_config.py`;
 print LOG $info."\n";
 
 ###############################################################
@@ -1046,15 +1053,15 @@ print LOG "#Clip with cutadapt\n";
 print LOG "###############################################################\n";
 for($a = 0; $a < $#fofns+1; $a++) {
 	open (FOFN, "<", $fofns[$a]) or die "$!";
-	@files = <FOFN>;
-	$filecount = 0;	
+	my @files = <FOFN>;
+	my $filecount = 0;	
 	#mkdir
 	unless (-e "pandaseq_logs$a") {
 		$cmd = "mkdir pandaseq_logs$a/";
 		system($cmd);
 	}
 	while($filecount < $#files+1) {
-		$in = $files[$filecount];
+		my $in = $files[$filecount];
 		chomp($in);
 		#Check if file $in exists; exit gracefully if it doesn't
 		if (!(-e $in)) {
@@ -1074,9 +1081,8 @@ for($a = 0; $a < $#fofns+1; $a++) {
 			exit;
 		}
 		$in=~/.*\/(.*?_[ACGT]*?_L\d{3}_R\d_\d{3}\.fastq(.gz|))$/;
-		$path = $1;
-		print $path."\n";
-		$out = "pandaseq_logs$a/$path";
+		my $path = $1;
+		my $out = "pandaseq_logs$a/$path";
 		#cutadapt
 		if ($in=~/.*_R1_.*/) {
 			if ($mult_bc) {
@@ -1110,30 +1116,28 @@ print"###############################################################\n";
 print LOG "###############################################################\n";
 print LOG "#Align with PANDAseq\n";
 print LOG "###############################################################\n";
-@sample_names = ();
-@orig_reads = ();
-@post_pandaseq = ();
-@post_cutadapt = ();
-@post_sickle = ();
+my @sample_names = (); my @orig_reads = (); my @post_pandaseq = (); my @post_cutadapt = (); my @post_sickle = ();
+my $samplef; my $sampler; my $barcodef; my $barcoder;
+my $fwd; my $rev;
 for($b = 0; $b < $#fofns+1; $b++) {
-	$dir = "pandaseq_logs$b";
+	my $dir = "pandaseq_logs$b";
 	chdir($dir);
-	$mapf = "map_".$proj."".$b.".txt";
-	$fast = $proj."".$b.".fa";
+	my $mapf = "map_".$proj."".$b.".txt";
+	my $fast = $proj."".$b.".fa";
 	open (FOFN, "<", "../".$fofns[$b]) or die "$!";
 	open (MAPF, ">", $mapf) or die "$!";
 	#Set up mapfile header
 	print MAPF "#SampleID\tBarcodeSequence\tLinkerPrimerSequence\tDescription\n";
 	#Set up global fasta file; make sure it's empty
 	if (my ($grabbing) = glob($fast)) {
-		$cmd0 = "rm $fast";
+		my $cmd0 = "rm $fast";
 		system($cmd0);
 	}
 	$cmd = "touch $fast";
 	system($cmd);
 	#Run pandaseq on each set of sequences; generate mapFile
-	@data = <FOFN>;
-	$i = 0;
+	my @data = <FOFN>;
+	my $i = 0;
 	while ($i < $#data+1) {
 		$samplef = $sampler = $barcodef = $barcoder = "";
 		$fwd = $data[$i];
@@ -1158,11 +1162,11 @@ for($b = 0; $b < $#fofns+1; $b++) {
 		$samplef=~s/-|\+|\s/\./g;
 		print $samplef."\n";
 		print MAPF $samplef."\t".$barcodef."\tCCTACGGGAGGCAGCAG\t$proj\n";
-		$barco = length $barcodef;
+		my $barco = length $barcodef;
 		#Run pandaseq cmd
 		$fwd=~/([^\/]+?)_L001_R1_001\.fastq(.gz|)/;
-		$fastq = $1.".fastq";
-		$pandalog = $1.".log.bz2";
+		my $fastq = $1.".fastq";
+		my $pandalog = $1.".log.bz2";
 		$cmd = "";
 		#multiple barcode locations?
 		if ($mult_bc) {
@@ -1174,7 +1178,7 @@ for($b = 0; $b < $#fofns+1; $b++) {
 			$cmd = "(pandaseq -A simple_bayesian -f ".$fwd." -r ".$rev." -p $fwd_primer -q $rev_primer -N -t 0.70 -T 1 -F > ".$fastq.") 2>&1| bzip2 -c > ".$pandalog;
 		}
 		
-		$cmd2 = "bzgrep STAT ".$pandalog." | tail -n 9";
+		my $cmd2 = "bzgrep STAT ".$pandalog." | tail -n 9";
 		print $cmd."\n";
 		print LOG $cmd."\n";
 		system($cmd);
@@ -1182,6 +1186,7 @@ for($b = 0; $b < $#fofns+1; $b++) {
 		print LOG $cmd2."\n";
 		system($cmd2);
 		#Get original read information from wc -l
+		my $lines;
 		if ($fwd=~/.*\.fastq\.gz/) {
 			$lines = `zcat $fwd | wc -l`;
 		} else {
@@ -1205,13 +1210,13 @@ for($b = 0; $b < $#fofns+1; $b++) {
         	#$cmd = `grep "Processed reads" ../temp.txt | tail -n 1`;
         	$cmd = `grep "Total reads processed" ../temp.txt | tail -n 1`;
 		$cmd =~/.*?([\d,]+).*?/;
-        	$all = $1;
+        	my $all = $1;
 		$all=~s/,//g;
         	$cmd = `grep "Reads with adapters" ../temp.txt | tail -n 1`;
         	$cmd =~/.*?([\d,]+).*?\(.*?\)/;
-        	$lost = $1;
+        	my $lost = $1;
 		$lost=~s/,//g;
-        	$left = $all - $lost;
+        	my $left = $all - $lost;
 		print LOG "cat ../temp.txt >> $err\n";
         	`cat ../temp.txt >> $err`;
         	`rm ../temp.txt`;
@@ -1315,6 +1320,7 @@ print"###############################################################\n";
 print LOG"###############################################################\n";
 print LOG "#Flip any Forward Barcoded Reads\n";
 print LOG"###############################################################\n";
+my $fi; my $dir; my $inf; my $line; my $revcomp;
 if ($barloc eq "rev") {
 	#perfect, don't have to do anything
 } elsif ($barloc eq "fwd") {
@@ -1376,6 +1382,7 @@ print LOG "###############################################################\n";
 print LOG "#Hack Barcodes for input into QIIME\n";
 print LOG "###############################################################\n";
 #Add barcodes?
+my $c; my $add; my $map; my $otf; my @data; my $i; my $barcode; my $m; my @mapdata; my $newline;
 for($c = 0; $c < $#fofns+1; $c++) {
 	$add = "";
 	if ($numruns > 64) {
@@ -1455,6 +1462,7 @@ print LOG "###############################################################\n";
 print LOG "#Consolidate run files\n";
 print LOG "###############################################################\n";
 mkdir ("pandaseq_logs");
+my $d; my $mapf; my $fast; my $cmd2;
 for($d = 0; $d < $#fofns+1; $d++) {
 	$dir = "pandaseq_logs$d";
 	chdir($dir);
@@ -1485,6 +1493,7 @@ for($d = 0; $d < $#fofns+1; $d++) {
 	chdir('..');
 }
 #Remove all numbered, sub pandaseq_log folders
+my $cmd0; my $cmd1;
 $cmd = "rm -r pandaseq_logs[0-9]*";
 system($cmd);
 if ( -e "map_".$proj.".txt") {
@@ -1515,6 +1524,7 @@ print LOG "###############################################################\n";
 #Setup variables
 $mapf = "map_".$proj.".txt";
 $fast = $proj.".fna";
+my $barco;
 if ($numruns == 1) {
 	$barco = $barco; #6;
 } elsif ($numruns <= 4) {
@@ -1533,7 +1543,7 @@ close ALPH;
 
 #check_id_map
 print "check_id_map.py\n";
-$out = `check_id_map.py -m $mapf -o map_aux`;
+my $out = `check_id_map.py -m $mapf -o map_aux`;
 chomp($out);
 if ($out=~/This script has been renamed validate_mapping_file\.py for clarity/) {
 	$out = `validate_mapping_file.py -m $mapf -o map_aux`;
@@ -1548,9 +1558,9 @@ print LOG "tar -zcvf map_aux.tar.gz map_aux/\n";
 print LOG "rm -rf map_aux/\n";
 `rm -rf map_aux/`;
 #split_libraries
-$splits = 1;
+my $splits = 1;
+my @post_splitlib = ();
 if ($splits) {
-	@post_splitlib = ();
 	print "split_libraries.py\n";
 	$cmd = "";
 	#if ($region eq "v3") {
@@ -2871,7 +2881,7 @@ sub getPrimers($$) {
 sub getPrimersFile($) {
 	my ($seqinfofile) = @_;
 	open(SEQIN, "<", $seqinfofile) or die "Cannot open -s sequence information file";
-	@in = <SEQIN>;
+	my @in = <SEQIN>;
 	close SEQIN;
 	$fwd_primer = $in[0]; chomp($fwd_primer);
 	$fwd_revcomp_primer = reverse($fwd_primer);
@@ -2897,7 +2907,7 @@ sub abundantOTU {
         if ($? == -1) {print "command failed: $!\n"; exit; }
         chdir("picked_otus_abundantotu_$gg");
         if ($? == -1) {print "command failed: $!\n"; exit; }
-        $dis = (100 - $clustThres)/100;
+        my $dis = (100 - $clustThres)/100;
         $cmd = "$bin/AbundantOTU+0.93b/bin/AbundantOTU+ -d $dis -i ../splits_dir/seqs_$gg.fna -o rep_set 2>&1 | tee -a $err";
         if ($time eq "y") { $cmd = "(time $bin/AbundantOTU+0.93b/bin/AbundantOTU+ -d $dis -i ../splits_dir/seqs_$gg.fna -o rep_set) > $time_pwd/time_pick_otus_abundantotu_$taxon.log 2>&1"; }
         system($cmd);
@@ -2925,7 +2935,7 @@ sub uclust {
 	my ($gg) = @_;
 	print "pick otus: UCLUST\n";
         chdir($time_pwd);
-	$dis = $clustThres/100;
+	my $dis = $clustThres/100;
 	$cmd="pick_otus.py -m uclust -s $dis -o picked_otus_uclust_$gg -i splits_dir/seqs_$gg.fna 2>&1 | tee -a $err";
         if ($time eq "y") { $cmd="(time pick_otus.py -m uclust -s $dis -o picked_otus_uclust_$gg -i splits_dir/seqs_$gg.fna) > $time_pwd/time_pick_otus_uclust_".$taxon.".log 2>&1"; }
         system($cmd);
@@ -2946,7 +2956,7 @@ sub cdhit {
 	my ($gg) = @_;
 	print "pick otus: cdhit\n";
 	chdir($time_pwd);
-	$dis = $clustThres/100;
+	my $dis = $clustThres/100;
         $cmd="pick_otus.py -m cdhit -s $dis -o picked_otus_cdhit_$gg -i splits_dir/seqs_$gg.fna 2>&1 | tee -a $err";
         if ($time eq "y") { $cmd="(time pick_otus.py -m cdhit -s $dis -o picked_otus_cdhit_$gg -i splits_dir/seqs_$gg.fna) > $time_pwd/time_pick_otus_cdhit_".$taxon.".log 2>&1"; }
         system($cmd);
@@ -2973,7 +2983,7 @@ sub dnaclust {
         if ($? == -1) { print "command failed: $!\n"; exit; }
         chdir("picked_otus_dnaclust_$gg");
         if ($? == -1) { print "command failed: $!\n"; exit; }
-	$dis = $clustThres/100;
+	my $dis = $clustThres/100;
         $cmd = "$bin/dnaclust_linux_release3/dnaclust -s $dis -i ../splits_dir/seqs_$gg.fna -t $threads > dnaclustoutfile";
         if ($time eq "y") { $cmd = "(time $bin/dnaclust_linux_release3/dnaclust -s $dis -i ../splits_dir/seqs_$gg.fna -t $threads > dnaclustoutfile) > $time_pwd/time_picked_otus_dnaclust_$taxon.log 2>&1"; }
         system($cmd);
@@ -3015,7 +3025,7 @@ sub qiime_mothur {
         system($cmd);
         print LOG $cmd."\n";
         if ($? == -1) { print "command failed: $!\n"; exit; }
-	$dis = $clustThres/100;
+	my $dis = $clustThres/100;
         $cmd = "pick_otus.py -m mothur -s $dis -c $linkage -o picked_otus_mothur_".$linkage."_$gg -i seqs_aligned_$gg/seqs_".$gg."_aligned.fasta | tee -a $err";
         if ($time eq "y") { $cmd = "(time pick_otus.py -m mothur -s $dis -c $linkage -o picked_otus_mothur_".$linkage."_$gg -i seqs_aligned_$gg/seqs_".$gg."_aligned.fasta) > $time_pwd/time_pick_otus_mothur_".$taxon."_".$linkage.".log 2>&1"; }
         system($cmd);
@@ -3043,7 +3053,7 @@ sub uclust_ref {
 	my ($gg) = @_;
 	print "pick otus: uclust-ref\n";
 	chdir($time_pwd);
-	$dis = $clustThres/100;
+	my $dis = $clustThres/100;
 	$cmd = "";
 	if ($gg eq "gg2011") {
 		$cmd = "pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta | tee -a $err 2>&1";
@@ -3075,7 +3085,7 @@ sub uclust_ref_strict {
         my ($gg) = @_;
         print "pick otus: uclust-ref-strict\n";
         chdir($time_pwd);
-        $dis = $clustThres/100;
+        my $dis = $clustThres/100;
         $cmd = "";
         if ($gg eq "gg2011") {
                 $cmd = "pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta | tee -a $err 2>&1"; 
@@ -3197,7 +3207,7 @@ sub uparse {
         #system($cmd);
         #print LOG $cmd."\n";
         #$cmd = "$bin/usearch -usearch_global ../splits_dir/seqs.fna -db otus_otu.fna -strand plus -id 0.97 -uc map.uc";
-	$clusty = $clustThres/100;
+	my $clusty = $clustThres/100;
 	$cmd = "$bin/usearch -usearch_global $time_pwd/splits_dir/seqs.fna -db $time_pwd/splits_dir/otus1.fa -strand plus -id $clusty -uc map.uc -top_hit_only | tee -a $err";
         if ($time eq "y") {
         	$cmd = "(time $bin/usearch -usearch_global $time_pwd/splits_dir/seqs.fna -db $time_pwd/splits_dir/otus1.fa -strand plus -id $clusty -uc map.uc -top_hit_only | tee -a $err) > $time_pwd/time_pick_otus_uparse_".$taxon."4.log 2>&1";
@@ -3416,6 +3426,7 @@ sub filter_otus {
         }
 	#convert_biom
         print "convert_biom.py\n";
+	my $convert_biom; my $biom_ver; my $biom_ver2;
         if (-e "otu_table_".$taxon."_".$gg."_n1.biom") {
                 $convert_biom = `which biom`;
 		$biom_ver = `biom --version 2>&1`;
@@ -3473,36 +3484,6 @@ sub filter_otus {
                 print "otu_table_".$taxon."_".$gg."_n2.biom DNE; aborting biom convert\n";
                 print ERR "otu_table_".$taxon."_".$gg."_n2.biom DNE; aborting biom convert\n";
         }
-#	if (-e "otu_table_".$taxon."_nochim.biom") {
-#		if (!$convert_biom) {
-#			$cmd = "convert_biom.py -i otu_table_".$taxon."_nochim.biom -o otu_table_".$taxon."_nochim.txt -b --header_key=taxonomy --output_metadata_id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-#		} else {
-#			$cmd = "biom convert -i otu_table_".$taxon."_nochim.biom -o otu_table_".$taxon."_nochim.txt -b --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-#		}
-#		system($cmd);
-#		print LOG $cmd."\n";
-#		if ($? == -1) { print "command failed: $!\n"; exit; }
-#	}
-#	if (-e "otu_table_".$taxon."_nochim_n1.biom") {
-#		if(!$convert_biom) {
-#			$cmd = "convert_biom.py -i otu_table_".$taxon."_nochim_n1.biom -o otu_table_".$taxon."_nochim_n1.txt -b --header_key=taxonomy --output_metadata_id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-#		} else {
-#			$cmd = "biom convert -i otu_table_".$taxon."_nochim_n1.biom -o otu_table_".$taxon."_nochim_n1.txt -b --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-#		}
-#		system($cmd);
-#		print LOG $cmd."\n";
-#		if ($? == -1) { print "command failed: $!\n"; exit; }
-#	}
-#	if (-e "otu_table_".$taxon."_nochim_n2.biom") {
-#		if(!$convert_biom) {
-#			$cmd = "convert_biom.py -i otu_table_".$taxon."_nochim_n2.biom -o otu_table_".$taxon."_nochim_n2.txt -b --header_key+taxonomy --output_metadata_id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-#		} else {
-#			$cmd = "biom convert -i otu_table_".$taxon."_nochim_n2.biom -o otu_table_".$taxon."_nochim_n2.txt -b --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-#		}
-#		system($cmd);
-#		print LOG $cmd."\n";
-#		if ($? == -1) { print "command failed: $!\n"; exit; }
-#	}
 	chdir('..');
 }
 
@@ -3521,13 +3502,6 @@ sub filter_alignment() {
                 print "align_$gg/rep_set_aligned.fasta DNE; aborting filter_alignment.py\n";
                 print ERR "align_$gg/rep_set_aligned.fasta DNE; aborting filter_alignment.py\n";
         }
-	#filter chimera checked aligned file, if it exists
-#	if (-e "align/rep_set_aligned_nochim.fasta") {
-#		$cmd = "filter_alignment.py -i align/rep_set_aligned_nochim.fasta -o align_filtered_chim/ 2>&1 | tee -a $err";
-#		system($cmd);
-#		print LOG $cmd."\n";
-#		if ($? == -1) { print "command failed: $!\n"; exit; }
-#	}
 	chdir('..');
 }
 
@@ -3546,13 +3520,6 @@ sub make_phylogeny() {
                 print "align_".$gg."_filtered/rep_set_aligned_pfiltered.fasta DNE; aborting make_phylogeny\n";
                 print ERR "align_".$gg."_filtered/rep_set_aligned_pfiltered.fasta DNE; aborting make_phylogeny\n";
         }
-	#make phylogeny with chimera checked phylogeny, if it exits
-#	if (-e "align_filtered_chim/rep_set_aligned_pfiltered.fasta") {
-#		$cmd = "make_phylogeny.py -i align_filtered_chim/rep_set_aligned_pfiltered.fasta -o rep_phylo_nochim.tre 2>&1 | tee -a $err";
-#		system($cmd);
-#		print LOG $cmd."\n";
-#		if ($? == -1) { print "command failed: $!\n"; exit; }
-#	}
 	chdir('..');
 }
 
@@ -3592,7 +3559,7 @@ sub make_ggpruned() {
                 $cmd = "perl -i -pe \"s/.*:.*\n//g\" gg_taxa.tmp";
                 print "filter_tree.py\n";
                 $cmd = "";
-		$prunedtree = "";
+		my $prunedtree = "";
 		if (($gg eq "gg2011") || ($gg eq "all")) {
 			$cmd = "filter_tree.py -i $db/gg_otus_4feb2011/trees/gg_".$clustThres."_otus_4feb2011.tre -t gg_taxa.tmp -o gg2011_".$clustThres."_pruned.tre 2>&1 | tee -a $err";
 			system($cmd);
@@ -3613,24 +3580,24 @@ sub make_ggpruned() {
                 #`cp gg_97_pruned.tre gg_97_pruned.bck.tre`;
                 #rename branches on the gg_97_pruned.tre to OTU numbers
                 open (FIN, "<", "gg_taxa.tmp") or die "$!\n";
-                @fin = <FIN>;
+                my @fin = <FIN>;
                 $i = 0;
-                $woline = $fin[$i];
+                my $woline = $fin[$i];
                 while ($i <= $#fin) {
                         chop($woline);
                         #given greengenes id, retrieve otu
                         #won't necessarily be unique, retrieve every line in rep_set_log with $woline
                         #$linematches = `strings align_$gg/rep_set_log.txt | egrep '.*?\\s$woline\\s.*?'`; This is not specific to finding a taxa id but instead anything in the line that matches the taxa id for e.g. as in the length of the sequence input!
 			#the column in rep_set_log.txt depends on whether OTUs were picked reference or open
-			$var = "";
+			my $var = "";
 			if (($clust eq "uclust-ref") | ($clust eq "uclust-ref-strict")) {
 				$var = "4";
 			} else {
 				$var = "5";
 			}
-			$linematches = `strings align_$gg/rep_set_log.txt | awk '{if (\$$var == "$woline") print \$0;}'`;
-                        @matches = split('\n', $linematches);
-			$otus = "";
+			my $linematches = `strings align_$gg/rep_set_log.txt | awk '{if (\$$var == "$woline") print \$0;}'`;
+                        my @matches = split('\n', $linematches);
+			my $otus = "";
 			$matches[0]=~/(.*?)\s.*/;
 			if ($#matches+1 == 1) {
 				$otus = "OTU".$1."";
@@ -3705,28 +3672,11 @@ sub removeRoot() {
                 print "otu_table_".$taxon."_".$gg."_n2.biom or otu_table_".$taxon."_".$gg."_n2.txt DNE; aborting removeRoot.pl\n";
                 print ERR "otu_table_".$taxon."_".$gg."_n2.biom or otu_table_".$taxon."_".$gg."_n2.txt DNE; aborting removeRoot.pl\n";
         }
-	#call removeRoot on chim_n1 biom file, if it exists
-#	if ((-e "otu_table_".$taxon."_chim_n1.biom") && ("otu_table_".$taxon."_chim_n1.txt")) {
-#		$cmd = "removeRoot.pl ".$pwd."/otu_table_".$taxon."_chim_n1 ".$pwd."/otu_table_".$taxon."_chim_n1_noRoot 2>&1 | tee -a $err";
-#		system($cmd);
- #               if ($? == -1) { print "command failed: $!\n"; exit; }
-  #              print LOG $cmd."\n";	
-#	}
-	#call removeRoot on chim_n2 biom file, if it exists
-#	if ((-e "otu_table_".$taxon."_chim_n2.biom") && ("otu_table_".$taxon."_chim_n2.txt")) {
-#		$cmd = "removeRoot.pl ".$pwd."/otu_table_".$taxon."_chim_n1 ".$pwd."/otu_table_".$taxon."_chim_n2_noRoot 2>&1 | tee -a $err";
-#		system($cmd);
- #               if ($? == -1) { print "command failed: $!\n"; exit; }
-  #              print LOG $cmd."\n";
-#	}
-	#call removeRoot on chim biom file, if it exists
-#	if ((-e "otu_table_".$taxon."_chim.biom") && ("otu_table_".$taxon."_chim.txt")) {
-#		$cmd = "removeRoot.pl ".$pwd."/otu_table_".$taxon."_chim ".$pwd."/otu_table_".$taxon."_chim_noroot 2>&1 | tee -a $err";
-#		system($cmd);
- #               if ($? == -1) { print "command failed: $!\n"; exit; }
-  #              print LOG $cmd."\n";
-#	}
 	#convert_biom
+	my $convert_biom; my $biom_ver; my $biom_ver2;
+	$convert_biom = `which biom`;
+	$biom_ver = `biom --version 2>&1`;
+	$biom_ver2 = `biom convert --version`;
         print "convert_biom.py\n";
 	if (-e "otu_table_".$taxon."_".$gg."_n2_noRoot.biom") {
 		if (!$convert_biom) {
@@ -3907,7 +3857,8 @@ sub alpha_div() {
 sub beta_div() {
 	my ($clust, $taxon, $gg) = @_;
 	chdir("$time_pwd/picked_otus_".$clust."_$gg");
-	$otu = "otu_table_".$taxon."_".$gg.".biom";
+	my $otu = "otu_table_".$taxon."_".$gg.".biom";
+	my $lib_stats; my $minsamples; my @minsplit; my $evalue; my $evalue1;
         if (-e $otu) {
                 $lib_stats = `which biom`;
 		$out = "library_stats_".$taxon."_$gg.txt";
