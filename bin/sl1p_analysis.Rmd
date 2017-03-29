@@ -1,6 +1,8 @@
-#Sl1p Preliminary Analysess
+#Sl1p Preliminary Analyses
 ##Author: Fiona J. Whelan
 ###	 whelanfj@mcmaster.ca
+
+###(included R markdown and html output for the user's convenience)
 ```{r: load libraries, include=FALSE}
 #System call: R -e "params= list( otutable='otu_table_rdp-training_gg2011_n1_noRoot.txt', mapfile='../<map-file>',trefile='gg2011_97_pruned.tre',pwd='<path-to-sl1p-picked_otu-out    put-directory>', L6file='wf_taxa_summary_rdp-training_gg2011_n1_noRoot/otu_table_rdp-training_gg2011_n1_noRoot_L6.txt', L2file='wf_taxa_summary_rdp-training_gg2011/otu_table_rdp    -training_gg2011_L2.txt', libstats='library_stats_rdp-training_gg2011_n1_noRoot.txt'); rmarkdown::render('sl1p_analysis.Rmd')"
 library(phytools)
@@ -33,7 +35,7 @@ treefile<-collapse.singles(treefile)
 write.tree(treefile, file = treFile)
 ```
 
-####Load phyloseq object
+####Load phyloseq object. This script uses phyloseq (https://joey711.github.io/phyloseq/) to input the OTU table, map file, and phylogeny from sl1p into R.
 ```{r: load phyloseq object, include=FALSE}
 qd <- import_qiime(otuFile, mapFile, treFile)
 ```
@@ -74,8 +76,8 @@ myColours2 <- function(x) {
 	return(col)
 }
 ```
-
-####Observe data for non-bacterial contamination
+####Preliminary Analyses
+####1. Observe data for non-bacterial contamination
 ```{r: unfil-taxa, fig.width=15, fig.height=10}
 L2 <- read.table(L2File, sep="\t", comment.char = '&', header=TRUE, row.names=1, skip=1)
 L2 <- t(L2)
@@ -107,12 +109,12 @@ p <- p + guides(fill=guide_legend(ncol=1))
 p
 ```
 
-####Observe filtered sequencing depth
+####2. Observe filtered sequencing depth
 ```{r: library stats, echo=FALSE, warning=FALSE}
 cat(readLines(libStats), sep = '\n')
 ```
 
-####Output taxonomic summary of the data
+####3. Output taxonomic summary of the data
 ```{r: taxa, fig.width=15, fig.height=10}
 L6 <- read.table(L6File, sep="\t", comment.char = '&', header=TRUE, row.names=1, skip=1)
 L6 <- t(L6)
@@ -159,7 +161,7 @@ rare.depth = min(sample_sums(qd))
 qd.rare = rarefy_even_depth(qd, sample.size = rare.depth, rngseed=1414)
 ```
 
-####Output alpha diversity metrics
+####4. Output alpha diversity metrics
 ```{r: alpha}
 p1 <- plot_richness(qd, x="X.SampleID", measures=c("Shannon", "Simpson", "Chao1"))
 p1 <- p1 + ggtitle("Unadjusted Alpha Diversity scores")
@@ -172,7 +174,7 @@ p2
 #ggsave(file="alpha.eps", p, scale=4) 
 ```
 
-####Output beta diversity metrics
+####5. Output beta diversity metrics
 ```{r: beta, fig.width=20, fig.height=5}
 #Unadjusted
 dist_bray <- phyloseq::distance(qd, method = "bray")
