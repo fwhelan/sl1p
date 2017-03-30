@@ -23,7 +23,7 @@ Installation instructions:
 		* biom tools (pip install numpy; pip install biom-format)
 		* PANDAseq (>=2.9) (sudo apt-add-repository ppa:neufeldlab/ppa && sudo apt-get update && sudo apt-get install pandaseq)
 		* perl's Switch module (sudo apt-get install libswitch-perl)
-		* R packages: 	phyloseq
+		* R packages: 	phyloseq (source('http://bioconductor.org/biocLite.R'); biocLite('phyloseq'))
 				knitr
 				phytools
 				ggplot2
