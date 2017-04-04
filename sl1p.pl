@@ -2,7 +2,7 @@
 use Switch;
 use strict; use warnings;
 #Author: Fiona J Whelan <whelanfj@mcmaster.ca>
-#Last Modified Date: March 23 2017
+#Last Modified Date: April 4 2017
 #License: GPL
 my $sl1p_ver = "4.1";
 my $bin = $ENV{'SL1P_BIN'};
@@ -24,6 +24,22 @@ if ((! defined $bin) && (! defined $db)) {
 
 my $usage =  "\nUsage: sl1p.pl <# of runs> <fofn for each run> <projectname> [-r region] [-s seq info file] [-b barcode loca     tion] [-q quality filter] [-d taxonomy database] [-p OTU picking algorithm] [-c clustering threshold] [-l linkage] [-m chimera checking] [-t taxonomic assignment method] [-x timed results] [-u CPU threads] [-f force overwrite] \n";
 
+my $help = "\nWill automate sequence \"processing\": raw v3 sequences off the sequencer through to QIIME analysis after asking a series of questions as to the clustering and taxonomic assignment methods etc. the user would like to use. Defaults are suggested.\n\nAll .fastq files must be in the directory that you call the script from.  Multiple runs must be split into multiple fofn files.\n
+	-r which region of the 16S rRNA gene sequenced; if other, -s must be defined [v3/v34/v4/other] (default: v3)
+	-s a sequence information file including primers, and min and max sequence length (default: none)
+	-b location of the sequence barcode [fwd/rev/mixed] (default: fwd)
+	-q the quality threshold for filtering (default: 30)
+	-k keep .fastq output from quality filtering process [y/n] (default:n)
+	-d the greengenes database that you would like to use for taxonomic assignment [gg2011/gg2013/silva111/all] (default: gg2011)
+	-p OTU picking algorithm [abundantotu/uclust/cdhit/dnaclust/uclust-ref/uclust-ref-strict/mothur/blast/uparse/all] (default: abundantotu)
+	-c OTU picking clustering threshold [0-100] (default: 97)
+	-l the linkage method to use with mothur [nearest/average/furthest/all] (default: average)
+	-m whether the user would like to employ chimera checking [y/n] (default: y)
+	-t the taxonomic assignment method [blast/rdp-training/all] (default: rdp-training)
+	-x do you want timed OTU picking and overall results [y/n\ (default: n)
+	-u how many CPU threads you would like to envoke [0-9] (default: 1)
+	-f force overwrite .fna, map, picked_otu, and split_dir files from previous runs [y/n] (default: n)\n";
+
 #Check if help flag used
 my @vars = splice @ARGV;
 my $search_for = "-h";
@@ -31,23 +47,7 @@ my ($h_index)= grep { $vars[$_] eq $search_for } 0..$#vars;
 if (defined($h_index)) {
 	print "\nsl1p.pl v$sl1p_ver Fiona J Whelan <whelanfj\@mcmaster.ca>\n";
         print "$usage";
-	print "\nWill automate sequence \"processing\": raw v3 sequences off the sequencer through to QIIME analysis after asking a series of questions as to the clustering and taxonomic assignment methods etc. the user would like to use. Defaults are suggested.\n\nAll .fastq files must be in the directory that you call the script from.  Multiple runs must be split into multiple fofn files.\n\n";
-        print "-r which region of the 16S rRNA gene sequenced; if other, -s must be defined [v3/v34/v4/other] (default: v3)\n";
-	print "-s a sequence information file including primers, and min and max sequence length (default: none)\n";
-        print "-b location of the sequence barcode [fwd/rev/mixed] (default: fwd)\n";
-        print "-q the quality threshold for filtering (default: 30)\n";
-	print "-k keep .fastq output from quality filtering process [y/n] (default:n)\n";
-	print "-d the greengenes database that you would like to use for taxonomic assignment [gg2011/gg2013/silva111/all] (default: gg2011)\n";
-        #print "-p OTU picking algorithm [abundantotu/uclust/cdhit/dnaclust/uclust-ref/mothur/blast/uparse/all] (default: abundantotu) \n";
-        print "-p OTU picking algorithm [abundantotu/uclust/cdhit/dnaclust/uclust-ref/uclust-ref-strict/mothur/blast/uparse/all] (default: abundantotu) \n";
-	print "-c OTU picking clustering threshold [0-100] (default: 97) \n";
-        print "-l the linkage method to use with mothur [nearest/average/furthest/all] (default: average)\n";
-        print "-m whether the user would like to employ chimera checking [y/n] (default: y)\n";
-	print "-t the taxonomic assignment method [blast/rdp-training/all] (default: rdp-training)\n";
-        #print "-x do you want timed results for each step of the analysis [y/n] (default: n) \nWARNING: the timed code is slightly outdated- use with caution and report any adverse behaviour to whelanfj\@mcmaster.ca\n";
-        print "-x do you want timed OTU picking and overall results [y/n\ (default: n)\n";
-	print "-u how many CPU threads you would like to envoke [0-9] (default: 1)\n";
-        print "-f force overwrite .fna, map, picked_otu, and split_dir files from previous runs [y/n] (default: n)\n";
+	print "$help";
         exit;
 }
 
