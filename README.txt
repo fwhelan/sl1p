@@ -2,7 +2,9 @@
 # Fiona Whelan <whelanfj@mcmaster.ca>			   #
 #							   #
 # 11.12.13; 01.14.15; 05.12.16				   #
-# Surette laboratory 16s rRNA processing pipeline: sl1p.pl #
+# The short-read library 16S rRNA gene seqing pipeline	   #
+# sl1p.pl						   #
+#							   #
 # readme_sl1p.txt					   #
 #							   #
 # ======================================================== #
