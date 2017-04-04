@@ -82,11 +82,11 @@ myColours2 <- function(x) {
 L2 <- read.table(L2File, sep="\t", comment.char = '&', header=TRUE, row.names=1, skip=1)
 L2 <- t(L2)
 #Order by abundance
-L2 <- L2[,order(colSums(L2), decreasing=TRUE)]
+L2 <- L2[,order(colSums(L2), decreasing=TRUE),drop=FALSE]
 #Change any individual values <1.0% to 0
 L2[L2<0.01] <- 0
 #Remove any taxa that now sum to 0
-L2 <- L2[,colSums(L2)>0]
+L2 <- L2[,colSums(L2)>0,drop=FALSE]
 #Add an Others column
 L2 <- as.data.frame(L2)
 L2[,"Taxa < 1%"] <- 1-rowSums(L2)
@@ -119,11 +119,11 @@ cat(readLines(libStats), sep = '\n')
 L6 <- read.table(L6File, sep="\t", comment.char = '&', header=TRUE, row.names=1, skip=1)
 L6 <- t(L6)
 #Order by abundance
-L6 <- L6[,order(colSums(L6), decreasing=TRUE)]
+L6 <- L6[,order(colSums(L6), decreasing=TRUE),drop=FALSE]
 #Change any individual values <1.0% to 0
 L6[L6<0.01] <- 0
 #Remove any taxa that now sum to 0
-L6 <- L6[,colSums(L6)>0]
+L6 <- L6[,colSums(L6)>0,drop=FALSE]
 #Add an Others column
 L6 <- as.data.frame(L6)
 L6[,"Taxa < 1%"] <- 1-rowSums(L6)
