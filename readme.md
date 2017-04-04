@@ -1,4 +1,4 @@
-# Surette laboratory 16S rRNA gene sequencing pipeline #
+# The short-read library 16S rRNA gene sequencing pipeline #
 ##(sl1p, pronounced `slip'). ##
 
 ![sl1p_graphic.jpg](https://bitbucket.org/repo/x8Ardxn/images/2793309766-sl1p_graphic.jpg)
