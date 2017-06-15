@@ -369,4 +369,9 @@ sl1p recommends checking for and removing chimeras from any 16S rRNA gene sequen
 
 #Taxonomic assignment
 
+# ===================================================== #
+# Addition of new databases/third party methods		#
+# ===================================================== #
+
+sl1p is publicly available, open-source software which is presented as-is. That being said, sl1p has an active author-base and will be maintained to suit user need and to adjust to new third party methods and databases as they become available. New versions, pull requests, issues, bugs, and suggested improvements can be viewed/requested at http://bitbucket.org/fwhelan/sl1p. Further, the user is welcome to edit or improve this software as per GNU copyright law. The sl1p code has been modularized and includes a separate subroutine per-third party option. A new algorithm or database option can be added by including a new subroutine and replacing the appropriate call to it in the Main method code.
 
