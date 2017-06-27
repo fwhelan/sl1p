@@ -289,7 +289,7 @@ if ($#vars+1 > $numruns+2) {
 		if ($p_index+1 < $#opts+1) {
 			$clust = $opts[$p_index+1];
 			#if ($clust ne "abundantotu" && $clust ne "uclust" && $clust ne "cdhit" && $clust ne "dnaclust" && $clust ne "uclust-ref" && $clust ne "mothur" && $clust ne "blast" && $clust ne "uparse" && $clust ne "all") 
-			if ($clust ne "abundantotu" && $clust ne "uclust" && $clust ne "cdhit" && $clust ne "dnaclust" && $clust ne "uclust-ref" && $clust ne "uclust-ref-strict" && $clust ne "mothur" && $clust ne "blast" && $clust ne "uparse" && $clust ne "swarm" && $clust ne "all")
+			if ($clust ne "abundantotu" && $clust ne "uclust" && $clust ne "cdhit" && $clust ne "dnaclust" && $clust ne "uclust-ref" && $clust ne "uclust-ref-strict" && $clust ne "mothur" && $clust ne "blast" && $clust ne "uparse" && $clust ne "swarm" && $clust ne "usearch61" && $clust ne "all")
 			{
 				print "-p OTU picking algorithm [abundantotu/uclust/cdhit/dnaclust/uclust-ref/uclust-ref-strict/mothur/blast/uparse/all] (default: abundantotu) \n";
 				print "Not a valid response, try again.\n";
@@ -1660,7 +1660,9 @@ if ($clust eq "abundantotu") {
 	&uparse($gg);
 } elsif ($clust eq "swarm") {
 	&swarm($gg);
-} elsif ($clust eq "all") {
+} elsif ($clust eq "usearch61") {
+	&usearch61($gg);
+}elsif ($clust eq "all") {
 	if ($gg eq "all") {
 		&abundantOTU("gg2011"); &abundantOTU("gg2013"); &abundantOTU("silva111");
 		&uclust("gg2011"); &uclust("gg2013"); &uclust("silva111");
@@ -3003,11 +3005,11 @@ sub dnaclust {
 }
 
 #### SUBROUTINE: mothur ####
-sub mothur {
+#sub mothur {
+#
+#}
 
-}
-
-#### SUBROUTINE: qiime's mothur- subroutine not in use ####
+#### SUBROUTINE: qiime's mothur ####
 sub qiime_mothur {
 	my ($linkage, $gg) = @_;
 	print "pick otus: mothur\n";
@@ -3152,7 +3154,8 @@ sub swarm {
 	$cmd = "";
 	if ($gg eq "gg2011") {
 		$cmd = "pick_otus.py -i splits_dir/seqs_$gg.fna -o picked_otus_swarm_$gg -m swarm -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta | tee -a $err 2>&1     ";
-		if ($time eq "y") { $cmd = "(time pick_otus.py -i splits_dir/seqs_$gg.fna -o picked_otus_swarm_$gg -m swarm -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb201     1.fasta) > $time_pwd/time_pick_otus_blast_$taxon.log 2>&1"; }
+		if ($time eq "y") { $cmd = "(time pick_otus.py -i splits_dir/seqs_$gg.fna -o picked_otus_swarm_$gg -m swarm -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb201     1.fasta) > $time_pwd/time_pick_otus_swarm_$taxon.log 2>&1"; }
+	}
 	system($cmd);
 	print LOG $cmd."\n";
 	if ($? == -1) { print "command failed: $!\n"; exit; }
@@ -3166,7 +3169,31 @@ sub swarm {
 	if ($? == -1) { print "command failed: $!\n"; exit; }
 	chdir('..');
 	return;
+}
+
+#### SUBROUTINE: usearch61 ####
+sub usearch61 {
+	my ($gg) = @_;
+	print "pick otus: usearch61\n";
+	chdir($time_pwd);
+	$cmd = "";
+	if ($gg eq "gg2011") {
+		$cmd = "pick_otus.py -i splits_dir/seqs_$gg.fna -o picked_otus_usearch61_$gg -m usearch61 -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta | tee -a $err 2>&1";
+		if ($time eq "y") { $cmd = "(time pick_otus.py -i splits/dir/seqs_$gg.fna -o picked_otus_usearch61_$gg -m usearch61 -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta) > $time_pwd/time_pick_otus_usearch61_$taxon.log 2>&1"; }
 	}
+	system($cmd);
+	print LOG $cmd."\n";
+	if ($? == -1) { print "command failed: $!\n"; exit; }
+	print "pick_rep_set.py\n";
+	$dir = "picked_otus_usearch61_$gg";
+	chdir($dir);
+	$cmd = "pick_rep_set.py -m most_abundant -s otu -i seqs_".$gg."_otus.txt -f ../splits_dir/seqs_$gg.fna -o rep_set.fna 2>&1 | tee -a $err";
+	if ($time eq "y") { $cmd = "(time pick_rep_set.py -m most_abundant -s otu -i seqs_".$gg."_otus.txt -f ../splits_dir/seqs_$gg.fna -o rep_set.fna) > $time_pwd/time_pick_rep_set.log 2>&1"; }
+	system($cmd);
+	print LOG $cmd."\n";
+	if ($? == -1) { print "command failed: $!\n"; exit; }
+	chdir('..');
+	return;
 }
 
 #### SUBROUTINE: UPARSE ####
