@@ -2885,17 +2885,18 @@ sub getPrimersFile($) {
 	my ($seqinfofile) = @_;
 	open(SEQIN, "<", $seqinfofile) or die "Cannot open -s sequence information file";
 	my @in = <SEQIN>;
+	chomp @in;
 	close SEQIN;
-	$fwd_primer = $in[0]; chomp($fwd_primer);
+	$fwd_primer = $in[0];
 	$fwd_revcomp_primer = reverse($fwd_primer);
 	$fwd_revcomp_primer =~ tr/ACGTacgt/TGCAtgca/;
-	$rev_primer = $in[1]; chomp($rev_primer);
+	$rev_primer = $in[1];
 	$rev_revcomp_primer = reverse($rev_primer);
 	$rev_revcomp_primer =~ tr/ACGTacgt/TGCAtgca/;
 	$overlap = 1;
-	$splitlib_min = $in[2]; chomp($splitlib_min);
-	$splitlib_max = $in[3]; chomp($splitlib_max);
-	$barloc = $in[4]; chomp($barloc);
+	$splitlib_min = $in[2];
+	$splitlib_max = $in[3];
+	$barloc = $in[4];
 	return($fwd_primer, $rev_primer, $fwd_revcomp_primer, $rev_revcomp_primer, $overlap, $splitlib_min, $splitlib_max, $barloc);
 }
 
