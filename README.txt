@@ -183,6 +183,9 @@ line 2: the reverse primer sequence
 line 3: the minimum sequence length included in the analysis
 line 4: the maximum sequence length included in the analysis
 line 5: the barcode location (fwd/rev)
+
+Note: This file MUST have Unix line endings. This file cannot be generated in any sort of Document Editor such as Microsoft Word or Libre Office.
+
 # ===================================================== #
 # Output						#
 # ===================================================== #
