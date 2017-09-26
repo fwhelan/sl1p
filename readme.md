@@ -7,6 +7,6 @@ sl1p is a software pipeline designed to simply the processing of 16S rRNA (and o
 
 For information on installation and requirements, see `INSTALL.txt`.
 
-For a comprehensive manual of sl1p, see `README.txt`.
+For a comprehensive manual of sl1p, see `README.txt`. For any additional inquires or to report any bugs or errors, please use the Issues tab.
 
 Citation information: Whelan FJ & Surette MG. 'A comprehensive evaluation of the sl1p pipeline for 16S rRNA gene sequencing analysis.' (2017) Microbiome. https://doi.org/10.1186/s40168-017-0314-2
