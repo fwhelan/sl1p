@@ -36,6 +36,7 @@ my $help = "\nWill automate sequence \"processing\": raw v3 sequences off the se
 	-l the linkage method to use with mothur [nearest/average/furthest/all] (default: average)
 	-m whether the user would like to employ chimera checking [y/n] (default: y)
 	-t the taxonomic assignment method [blast/rdp-training/all] (default: rdp-training)
+	-e certainty cutoff for taxonomic assignment as designed by Qiime [0-1] (default: 0.5)
 	-x do you want timed OTU picking and overall results [y/n\ (default: n)
 	-u how many CPU threads you would like to envoke [0-9] (default: 1)
 	-f force overwrite .fna, map, picked_otu, and split_dir files from previous runs [y/n] (default: n)\n";
@@ -143,6 +144,7 @@ my $clust = "abundantotu";
 my $clustThres = "97";
 my $linkage = "average";
 my $taxon = "rdp-training";
+my $taxon_cutoff = "0.5";
 my $time = "n";
 my $force = 0;
 my $threads = 1;
@@ -419,6 +421,24 @@ if ($#vars+1 > $numruns+2) {
 			print "You provided -t with no option.\n";
 			print "-t the taxonomic assignment method [blast/rdp-training/all] (default: rdp-training)\n";
                         print "Not a valid response, try again.\n";
+			exit;
+		}
+	}
+	#-e taxonomic assignment classification cutoff
+	$search_for = "-e";
+	my($e_index)= grep { $opts[$_] eq $search_for } 0..$#opts;
+	if (defined($e_index)) {
+		if ($e_index+1 < $#opts+1) {
+			$taxon_cutoff = $opts[$e_index+1];
+			if($taxon_cutoff < 0 || $taxon_cutoff > 1) {
+				print "-e certainty cutoff for taxonomic assignment as designed by Qiime [0-1] (default: 0.5)\n";
+				print "Not a valid response, try again.\n";
+				exit;
+			}
+		} else {
+			print "You provided -e with no option.\n";
+			print "-e certainty cutoff for taxonomic assignment as designed by Qiime [0-1] (default: 0.5)\n";
+			print "Not a valid response, try again.\n";
 			exit;
 		}
 	}
@@ -3354,13 +3374,13 @@ sub taxa_blast() {
         if (-e "rep_set.fna") {
 		if ($gg eq "gg2011") {
         		$cmd="assign_taxonomy.py -m blast -i rep_set.fna -r $db/gg_otus_4feb2011/rep_set/gg_".$clustThres."_otus_4feb2011.fasta -t $db/gg_otus_4feb2011/taxonomies/greengenes_tax.txt -o blast_".$gg."_assigned_taxonomy_tr 2>&1 | tee -a $err";
-                	if ($time eq "y") { $cmd="(time assign_taxonomy.py -m blast -i rep_set.fna -r $db/gg_otus_4feb2011/rep_set/gg_".$clustThres."_otus_4feb2011.fasta -t $db/gg_otus_4feb2011/taxonomies/greengenes_tax.txt -o blast_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_blast.log 2>&1"; }
+                	if ($time eq "y") { $cmd="(time assign_taxonomy.py -m blast  -i rep_set.fna -r $db/gg_otus_4feb2011/rep_set/gg_".$clustThres."_otus_4feb2011.fasta -t $db/gg_otus_4feb2011/taxonomies/greengenes_tax.txt -o blast_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_blast.log 2>&1"; }
 		} elsif ($gg eq "gg2013") {
 			$cmd="assign_taxonomy.py -m blast -i rep_set.fna -r $db/gg_13_8_otus/rep_set/".$clustThres."_otus.fasta -t $db/gg_13_8_otus/taxonomy/".$clustThres."_otu_taxonomy.txt -o blast_".$gg."_assigned_taxonomy_tr 2>&1 | tee -a $err";
-			if ($time eq "y") { $cmd="(time assign_taxonomy.py -m blast -i rep_set.fna -r $db/gg_13_8_otus/rep_set/".$clustThres."_otus.fasta -t $db/gg_13_8_otus/taxonomy/".$clustThres."_otu_taxonomy.txt -o blast_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_blast.log 2>&1"; }
+			if ($time eq "y") { $cmd="(time assign_taxonomy.py -m blast  -i rep_set.fna -r $db/gg_13_8_otus/rep_set/".$clustThres."_otus.fasta -t $db/gg_13_8_otus/taxonomy/".$clustThres."_otu_taxonomy.txt -o blast_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_blast.log 2>&1"; }
 		} elsif ($gg eq "silva111") {
 			$cmd="assign_taxonomy.py -m blast -i rep_set.fna -r $db/Silva_111_post/rep_set/".$clustThres."_Silva_111_rep_set.fasta -t $db/Silva_111_post/taxonomy/".$clustThres."_Silva_111_taxa_map_RDP_6_levels.txt -o blast_".$gg."_assigned_taxonomy_tr 2>&1 | tee -a $err";
-			if ($time eq "y") { $cmd="(time assign_taxonomy.py -m blast -i rep_set.fna -r $db/Silva_111_post/rep_set/".$clustThres."_Silva_111_rep_set.fasta -t $db/Silva_111_post/taxonomy/".$clustThres."_Silva_111_taxa_map_RDP_6_levels.txt -o blast_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_blast.log 2>&1"; }
+			if ($time eq "y") { $cmd="(time assign_taxonomy.py -m blast  -i rep_set.fna -r $db/Silva_111_post/rep_set/".$clustThres."_Silva_111_rep_set.fasta -t $db/Silva_111_post/taxonomy/".$clustThres."_Silva_111_taxa_map_RDP_6_levels.txt -o blast_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_blast.log 2>&1"; }
 		}
 		system($cmd);
                 print LOG $cmd."\n";
@@ -3380,14 +3400,14 @@ sub taxa_rdp_training() {
 	print "assign_taxonomy.py\n";
 	if (-e "rep_set.fna") {
 		if ($gg eq "gg2011") {
-                	$cmd="assign_taxonomy.py -m rdp -c 0.5 --rdp_max_memory 15000 -i rep_set.fna -r $db/gg_otus_4feb2011/rep_set/gg_".$clustThres."_otus_4feb2011.fasta -t $db/gg_otus_4feb2011/taxonomies/greengenes_tax_rdp_train_genus.txt -o rdp-training_".$gg."_assigned_taxonomy_tr 2>&1 | tee -a $err";
-                        if ($time eq "y") { $cmd="(time assign_taxonomy.py -m rdp -c 0.5 --rdp_max_memory 8000 -i rep_set.fna -r $db/gg_otus_4feb2011/rep_set/gg_".$clustThres."_otus_4feb2011.fasta -t $db/gg_otus_4feb2011/taxonomies/greengenes_tax_rdp_train_genus.txt -o rdp-training_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_rdp-training.log 2>&1"; }
+                	$cmd="assign_taxonomy.py -m rdp -c $taxon_cutoff --rdp_max_memory 15000 -i rep_set.fna -r $db/gg_otus_4feb2011/rep_set/gg_".$clustThres."_otus_4feb2011.fasta -t $db/gg_otus_4feb2011/taxonomies/greengenes_tax_rdp_train_genus.txt -o rdp-training_".$gg."_assigned_taxonomy_tr 2>&1 | tee -a $err";
+                        if ($time eq "y") { $cmd="(time assign_taxonomy.py -m rdp -c $taxon_cutoff --rdp_max_memory 8000 -i rep_set.fna -r $db/gg_otus_4feb2011/rep_set/gg_".$clustThres."_otus_4feb2011.fasta -t $db/gg_otus_4feb2011/taxonomies/greengenes_tax_rdp_train_genus.txt -o rdp-training_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_rdp-training.log 2>&1"; }
                 } elsif ($gg eq "gg2013") {
-                        $cmd="assign_taxonomy.py -m rdp -c 0.5 --rdp_max_memory 8000 -i rep_set.fna -r $db/gg_13_8_otus/rep_set/".$clustThres."_otus.fasta -t $db/gg_13_8_otus/taxonomy/".$clustThres."_otu_taxonomy.txt -o rdp-training_".$gg."_assigned_taxonomy_tr 2>&1 | tee -a $err";
-			if ($time eq "y") { $cmd="(time assign_taxonomy.py -m rdp -c 0.5 --rdp_max_memory 8000 -i rep_set.fna -r $db/gg_13_8_otus/rep_set/".$clustThres."_otus.fasta -t $db/gg_13_8_otus/taxonomy/".$clustThres."_otu_taxonomy.txt -o rdp-training_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_rdp-training.log 2>&1"; }
+                        $cmd="assign_taxonomy.py -m rdp -c $taxon_cutoff --rdp_max_memory 8000 -i rep_set.fna -r $db/gg_13_8_otus/rep_set/".$clustThres."_otus.fasta -t $db/gg_13_8_otus/taxonomy/".$clustThres."_otu_taxonomy.txt -o rdp-training_".$gg."_assigned_taxonomy_tr 2>&1 | tee -a $err";
+			if ($time eq "y") { $cmd="(time assign_taxonomy.py -m rdp -c $taxon_cutoff --rdp_max_memory 8000 -i rep_set.fna -r $db/gg_13_8_otus/rep_set/".$clustThres."_otus.fasta -t $db/gg_13_8_otus/taxonomy/".$clustThres."_otu_taxonomy.txt -o rdp-training_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_rdp-training.log 2>&1"; }
                 } elsif ($gg eq "silva111") {
-			$cmd="assign_taxonomy.py -m rdp -c 0.5 --rdp_max_memory 8000 -i rep_set.fna -r $db/Silva_111_post/rep_set/".$clustThres."_Silva_111_rep_set.fasta -t $db/Silva_111_post/taxonomy/".$clustThres."_Silva_111_taxa_map_RDP_6_levels.txt -o rdp-training_".$gg."_assigned_taxonomy_tr 2>&1 | tee -a $err";
-			if ($time eq "y") { $cmd="(time assign_taxonomy.py -m rdp -c 0.5 --rdp_max_memory 8000 -i rep_set.fna -r $db/Silva_111_post/rep_set/".$clustThres."_Silva_111_rep_set.fasta -t $db/Silva_111_post/taxonomy/".     $clustThres."_Silva_111_taxa_map_RDP_6_levels.txt -o rdp-training_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_rdp-training.log 2>&1"; }
+			$cmd="assign_taxonomy.py -m rdp -c $taxon_cutoff --rdp_max_memory 8000 -i rep_set.fna -r $db/Silva_111_post/rep_set/".$clustThres."_Silva_111_rep_set.fasta -t $db/Silva_111_post/taxonomy/".$clustThres."_Silva_111_taxa_map_RDP_6_levels.txt -o rdp-training_".$gg."_assigned_taxonomy_tr 2>&1 | tee -a $err";
+			if ($time eq "y") { $cmd="(time assign_taxonomy.py -m rdp -c $taxon_cutoff --rdp_max_memory 8000 -i rep_set.fna -r $db/Silva_111_post/rep_set/".$clustThres."_Silva_111_rep_set.fasta -t $db/Silva_111_post/taxonomy/".     $clustThres."_Silva_111_taxa_map_RDP_6_levels.txt -o rdp-training_".$gg."_assigned_taxonomy_tr) > $time_pwd/time_assign_taxonomy_rdp-training.log 2>&1"; }
 		}
 		system($cmd);
                 print LOG $cmd."\n";
