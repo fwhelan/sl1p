@@ -1300,9 +1300,9 @@ for($b = 0; $b < $#fofns+1; $b++) {
 		`mv tmp.fa $fastq`;
         	push @post_cutadapt, $left;
 		#Remove low quality paired-end reads post pandaseq
-		print LOG "$bin/sickle/sickle se -q $qual -l 100 -f $fastq -t sanger -o tmp.fa 2>&1 | tee -a ../temp.txt\n";
-		system("$bin/sickle/sickle se -q $qual -l 100 -f $fastq -t sanger -o tmp.fa 2>&1 | tee -a ../temp.txt");
-		print "$bin/sickle/sickle se -q $qual -l 100 -f $fastq -t sanger -o tmp.fa 2>&1 | tee -a ../temp.txt\n";
+		print LOG "$bin/sickle/sickle se -q $qual -l $splitlib_min -f $fastq -t sanger -o tmp.fa 2>&1 | tee -a ../temp.txt\n";
+		system("$bin/sickle/sickle se -q $qual -l $splitlib_min -f $fastq -t sanger -o tmp.fa 2>&1 | tee -a ../temp.txt");
+		print "$bin/sickle/sickle se -q $qual -l $splitlib_min -f $fastq -t sanger -o tmp.fa 2>&1 | tee -a ../temp.txt\n";
 		`mv tmp.fa $fastq`;
 		#Calculate the number of sequences post sickle
 		$left = `grep "FastQ records kept:" ../temp.txt`;
