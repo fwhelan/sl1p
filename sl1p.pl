@@ -1494,6 +1494,11 @@ for($d = 0; $d < $#fofns+1; $d++) {
 	$cmd2 = "cp $mapf ../$mapf";
 	system($cmd);
 	system($cmd2);
+	#If map file isn't the first, remove header
+	if ($d != 0) {
+		$cmd = "perl -i -pe 's/#SampleID\\tBarcodeSequence\\tLinkerPrimerSequence\\tDescription\\n//g' ../$mapf";
+		system($cmd);
+	}
 	$cmd = "rm $fast";
 	$cmd2 = "rm $mapf";
 	system($cmd);
