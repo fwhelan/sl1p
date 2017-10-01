@@ -28,6 +28,7 @@ Contents
 -----------
 Version 4.2
 -----------
+-fixed a bug that prevented the sl1p_analysis.html to be generated when >2 fofn files were used to run sl1p
 -fixes to the sl1p_analysis.Rmd headers to match Rmd formatting best practices
 -adding -e functionality to allow the user to choose a taxonomic confidence cutoff
 -----------
