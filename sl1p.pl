@@ -4,7 +4,7 @@ use strict; use warnings;
 #Author: Fiona J Whelan <whelanfj@mcmaster.ca>
 #Last Modified Date: April 4 2017
 #License: GPL
-my $sl1p_ver = "4.1";
+my $sl1p_ver = "4.2";
 my $bin = $ENV{'SL1P_BIN'};
 my $db = $ENV{'SL1P_DB'};
 if ((! defined $bin) && (! defined $db)) {
