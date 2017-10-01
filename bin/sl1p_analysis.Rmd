@@ -3,7 +3,8 @@
 ###	 whelanfj@mcmaster.ca
 
 ###(included R markdown and html output for the user's convenience)
-```{r: load libraries, include=FALSE}
+#Load libraries
+```{r, include=FALSE}
 #System call: R -e "params= list( otutable='otu_table_rdp-training_gg2011_n1_noRoot.txt', mapfile='../<map-file>',trefile='gg2011_97_pruned.tre',pwd='<path-to-sl1p-picked_otu-out    put-directory>', L6file='wf_taxa_summary_rdp-training_gg2011_n1_noRoot/otu_table_rdp-training_gg2011_n1_noRoot_L6.txt', L2file='wf_taxa_summary_rdp-training_gg2011/otu_table_rdp    -training_gg2011_L2.txt', libstats='library_stats_rdp-training_gg2011_n1_noRoot.txt'); rmarkdown::render('sl1p_analysis.Rmd')"
 library(phytools)
 library(phyloseq)
@@ -12,7 +13,7 @@ library(cowplot)
 library(hash)
 ```
 
-```{r: get user input, include=FALSE}
+```{r, include=FALSE}
 #Get user input
 otuFile <- paste(params$pwd,"/",params$otutable, sep="")
 otuFile
@@ -28,7 +29,7 @@ libStats <- paste(params$pwd, "/", params$libstats, sep="")
 libStats
 ```
 
-```{r: correct phylogeny, include=FALSE}
+```{r, include=FALSE}
 ####Load and re-write a corrected phylogeny.
 treefile<-read.newick(treFile)
 treefile<-collapse.singles(treefile)
@@ -36,15 +37,15 @@ write.tree(treefile, file = treFile)
 ```
 
 ####Load phyloseq object. This script uses phyloseq (https://joey711.github.io/phyloseq/) to input the OTU table, map file, and phylogeny from sl1p into R.
-```{r: load phyloseq object, include=FALSE}
+```{r, include=FALSE}
 qd <- import_qiime(otuFile, mapFile, treFile)
 ```
 
-```{r: load phyloseq object2}
+```{r}
 qd
 ```
 
-```{r: function, include=FALSE}
+```{r, include=FALSE}
 #Taxa function for showing Root
 myColours <- function(x) {
 	h <- hash()
@@ -78,7 +79,7 @@ myColours2 <- function(x) {
 ```
 ####Preliminary Analyses
 ####1. Observe data for non-bacterial contamination
-```{r: unfil-taxa, fig.width=15, fig.height=10}
+```{r, fig.width=15, fig.height=10}
 L2 <- read.table(L2File, sep="\t", comment.char = '&', header=TRUE, row.names=1, skip=1)
 L2 <- t(L2)
 #Order by abundance
@@ -110,12 +111,12 @@ p
 ```
 
 ####2. Observe filtered sequencing depth
-```{r: library stats, echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 cat(readLines(libStats), sep = '\n')
 ```
 
 ####3. Output taxonomic summary of the data
-```{r: taxa, fig.width=15, fig.height=10}
+```{r, fig.width=15, fig.height=10}
 L6 <- read.table(L6File, sep="\t", comment.char = '&', header=TRUE, row.names=1, skip=1)
 L6 <- t(L6)
 #Order by abundance
@@ -148,7 +149,7 @@ p
 
 ####Do proportional normalization
 Code a modified form of that supplied in the supplemental data of Waste Not, Want No
-```{r: normalization1}
+```{r}
 normf = function(x) {
   x/sum(x)
 }
@@ -156,13 +157,13 @@ qd.norm = transform_sample_counts(qd, normf)
 ```
 
 ####Do rarefication normalization
-```{r: normalization2, message=FALSE}
+```{r, message=FALSE}
 rare.depth = min(sample_sums(qd))
 qd.rare = rarefy_even_depth(qd, sample.size = rare.depth, rngseed=1414)
 ```
 
 ####4. Output alpha diversity metrics
-```{r: alpha}
+```{r}
 p1 <- plot_richness(qd, x="X.SampleID", measures=c("Shannon", "Simpson", "Chao1"))
 p1 <- p1 + ggtitle("Unadjusted Alpha Diversity scores")
 p1
@@ -175,7 +176,7 @@ p2
 ```
 
 ####5. Output beta diversity metrics
-```{r: beta, fig.width=20, fig.height=5}
+```{r, fig.width=20, fig.height=5}
 #Unadjusted
 dist_bray <- phyloseq::distance(qd, method = "bray")
 iMDS_bray <- ordinate(qd, "PCoA", distance = dist_bray)

@@ -26,6 +26,10 @@ Contents
 # What's new						#
 # ===================================================== #
 -----------
+Version 4.2
+-----------
+-fixes to the sl1p_analysis.Rmd headers to match Rmd formatting best practices
+-----------
 Version 4.1
 -----------
 -bug fixes in gg_pruned when >1 OTU maps to the same Greengenes Identifier
