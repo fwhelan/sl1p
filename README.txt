@@ -29,6 +29,7 @@ Contents
 Version 4.2
 -----------
 -fixes to the sl1p_analysis.Rmd headers to match Rmd formatting best practices
+-adding -e functionality to allow the user to choose a taxonomic confidence cutoff
 -----------
 Version 4.1
 -----------
