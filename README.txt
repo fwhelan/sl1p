@@ -28,6 +28,7 @@ Contents
 -----------
 Version 4.2
 -----------
+-updates to the v34 seq length range due to mathematical error; old: 431-531bp, new: 380-480bp
 -sickle now culls any sequence < the min sequence length determined by the input primer sequences
 -fixed a bug that prevented the sl1p_analysis.html to be generated when >2 fofn files were used to run sl1p
 -fixes to the sl1p_analysis.Rmd headers to match Rmd formatting best practices
