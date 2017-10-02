@@ -1854,7 +1854,7 @@ if ($taxon eq "blast") {
 		&taxa_rdp_training("uclust-ref-strict", $gg);
 		&taxa_blast("blast", $gg);
 		&taxa_rdp_training("blast", $gg);
-                $clust = "uparse";
+                #$clust = "uparse";
 		&taxa_blast("uparse", $gg);
 		&taxa_rdp_training("uparse", $gg);
 	} else {
@@ -1983,7 +1983,7 @@ if (($clust eq "all") && ($gg eq "all")) {
 	&align_seqs("blast", $gg);
 	&filter_alignment("blast", $gg);
 	&make_phylogeny("blast", $gg);
-	&make_ggpruend("blast", $gg);
+	&make_ggpruned("blast", $gg);
 
 	&align_seqs("uparse", $gg);
 	&filter_alignment("uparse", $gg);
@@ -2374,7 +2374,7 @@ if (($clust eq "all") && ($taxon eq "all") && ($gg eq "all")) {
         &beta_div("uparse", "rdp-training", $gg);
 	&RAnalysis("uparse", "rdp-training", $gg);
 	&cleanUp("uparse", "rdp-training", $gg);
-} elsif (($clust eq "all") & ($gg eq "all")) {
+} elsif (($clust eq "all") && ($gg eq "all")) {
     	&make_otu_table("abundantotu", $taxon, "gg2011");
     	&filter_otus("abundantotu", $taxon, "gg2011");
     	&removeRoot("abundantotu", $taxon, "gg2011");
@@ -2649,7 +2649,7 @@ if (($clust eq "all") && ($taxon eq "all") && ($gg eq "all")) {
 	&beta_div("uparse", $taxon, "silva111");
 	&RAnalysis("uparse", $taxon, "silva111");
 	&cleanUp("uparse", $taxon, "silva111");
-} elsif (($taxon eq "all") & ($gg eq "all")) {
+} elsif (($taxon eq "all") && ($gg eq "all")) {
 	&make_otu_table($clust, "blast", "gg2011");
     	&filter_otus($clust, "blast", "gg2011");
     	&removeRoot($clust, "blast", "gg2011");
