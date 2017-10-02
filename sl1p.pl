@@ -2863,8 +2863,8 @@ sub getPrimers($$) {
                                 $rev_revcomp_primer = "ATTAGAWACCCBDGTAGTCC";
                                 $overlap = 1;
 				#Length of amplicon is expected to be 481bp (341F to 806R with a 16bp forward primer)
-				$splitlib_min = 431;
-				$splitlib_max = 531;
+				$splitlib_min = 380;
+				$splitlib_max = 480;
                         } elsif ($region eq "v4") {
 				$fwd_primer = "GTGYCAGCMGCCGCGGTAA";
 				$rev_primer = "GGACTACNVGGGTWTCTAAT";
@@ -2890,8 +2890,8 @@ sub getPrimers($$) {
                                 $fwd_revcomp_primer = "ATTAGAWACCCBDGTAGTCC";
                                 $rev_revcomp_primer = "CTGCTGCCTCCCGTAGG";
                                 $overlap = 1;
-				$splitlib_min = 431;
-				$splitlib_max = 531;
+				$splitlib_min = 380;
+				$splitlib_max = 480;
                         } elsif ($region eq "v4") {
 				$fwd_primer = "GGACTACNVGGGTWTCTAAT";
 				$rev_primer = "GTGYCAGCMGCCGCGGTAA";
