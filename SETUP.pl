@@ -35,4 +35,9 @@ if (! -e 'master.zip') {
 }
 print "[sl1p]unzip master.zip\n";
 `unzip master.zip`;
+print "make sickle\n";
+chdir('sickle-master');
+`make`;
+chdir('..');
+`mv sickle-master/ sickle/`;
 chdir('..');
