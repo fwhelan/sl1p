@@ -1,6 +1,17 @@
 sl1p (pronounced slip)
 ----------------------
 
+Dependencies (for default functionality):
+* QIIME (>=1.6.0)
+	* rdp-classifier
+	* usearch-61
+* biom tools
+* PANDAseq (>=2.9)
+* perl's Switch module
+* R packages: phyloseq, knitr, phytools, ggplot2, ggplot2, cowplot, rmarkdown
+* pandoc
+
+
 Installation instructions:
         -Change directory to the folder with this readme file
 	-Export environment variable:
