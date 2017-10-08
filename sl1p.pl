@@ -3646,7 +3646,7 @@ sub make_ggpruned() {
 			my $var = "";
 			if ($clust eq "uparse") {
 				$var = "3";
-			} elsif (($clust eq "uclust-ref") | ($clust eq "uclust-ref-strict") | ($clust eq "uparse")) {
+			} elsif (($clust eq "uclust") | ($clust eq "cdhit") | ($clust eq "dnaclust") | ($clust eq "uclust-ref") | ($clust eq "uclust-ref-strict") | ($clust eq "uparse")) {
 				$var = "4";
 			} else {
 				$var = "5";
@@ -3658,6 +3658,8 @@ sub make_ggpruned() {
 			if ($#matches+1 == 1) {
 				if ($clust eq "uparse") {
 					$otus = "'\\''$1'\\''";
+				} elsif ($clust eq "uclust") {
+					$otus = "$1";
 				} else {
 					$otus = "OTU".$1."";
 				}
@@ -3665,6 +3667,8 @@ sub make_ggpruned() {
                         	#$matches[0]=~/(.*?)\s.*/;
 				if ($clust eq "uparse") {
 					$otus = "('\\''$1'\\'':0";
+				} elsif ($clust eq "uclust") {
+					$otus = "($1:0";
 				} else {
                         		$otus = "(OTU".$1.":0";
 				}
@@ -3672,6 +3676,8 @@ sub make_ggpruned() {
                         	        $matches[$a]=~/(.*?)\s.*/;
 					if ($clust eq "uparse") {
 						$otus = $otus.",'\\''".$1."'\\'':0";
+					} elsif ($clust eq "uclust") {
+						$otus = $otus.",".$1.":0";
 					} else {
                         	        	$otus = $otus.","."OTU".$1.":0";
 					}
