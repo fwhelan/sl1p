@@ -3583,7 +3583,7 @@ sub make_ggpruned() {
 	chdir("$time_pwd/picked_otus_".$clust."_$gg");
 	print "make GG pruned phylogeny\n";
         if (-e "align_$gg/rep_set_log.txt") {
-                $cmd = "cut -f 4 align_$gg/rep_set_log.txt > gg_taxa.tmp";
+		$cmd = "cut -f 4 align_$gg/rep_set_log.txt > gg_taxa.tmp";
                 system($cmd);
                 print LOG $cmd."\n";
                 if ($? == -1) { print "command failed: $!\n"; exit; }
@@ -3644,7 +3644,9 @@ sub make_ggpruned() {
                         #$linematches = `strings align_$gg/rep_set_log.txt | egrep '.*?\\s$woline\\s.*?'`; This is not specific to finding a taxa id but instead anything in the line that matches the taxa id for e.g. as in the length of the sequence input!
 			#the column in rep_set_log.txt depends on whether OTUs were picked reference or open
 			my $var = "";
-			if (($clust eq "uclust-ref") | ($clust eq "uclust-ref-strict")) {
+			if ($clust eq "uparse") {
+				$var = "3";
+			} elsif (($clust eq "uclust-ref") | ($clust eq "uclust-ref-strict") | ($clust eq "uparse")) {
 				$var = "4";
 			} else {
 				$var = "5";
@@ -3654,13 +3656,25 @@ sub make_ggpruned() {
 			my $otus = "";
 			$matches[0]=~/(.*?)\s.*/;
 			if ($#matches+1 == 1) {
-				$otus = "OTU".$1."";
+				if ($clust eq "uparse") {
+					$otus = "'\\''$1'\\''";
+				} else {
+					$otus = "OTU".$1."";
+				}
 			} else {
                         	#$matches[0]=~/(.*?)\s.*/;
-                        	$otus = "(OTU".$1.":0";
+				if ($clust eq "uparse") {
+					$otus = "('\\''$1'\\'':0";
+				} else {
+                        		$otus = "(OTU".$1.":0";
+				}
                         	for($a=1; $a <=$#matches; $a++) {
                         	        $matches[$a]=~/(.*?)\s.*/;
-                        	        $otus = $otus.","."OTU".$1.":0";
+					if ($clust eq "uparse") {
+						$otus = $otus.",'\\''".$1."'\\'':0";
+					} else {
+                        	        	$otus = $otus.","."OTU".$1.":0";
+					}
                         	}
                         	$otus = $otus.")";
 			}
@@ -3676,8 +3690,10 @@ sub make_ggpruned() {
                 }
 		close FIN;
 		#Remove OTUs from phylogeny
-		$cmd = "perl -i -pe 's/OTU//g' $prunedtree";
-		system($cmd);
+		if ($clust ne "uparse") {
+			$cmd = "perl -i -pe 's/OTU//g' $prunedtree";
+			system($cmd);
+		}
 		$cmd = "rm gg_taxa.tmp";
 		system($cmd);
 		print LOG $cmd."\n";
