@@ -8,7 +8,7 @@ Dependencies (for default functionality):
 * biom tools
 * PANDAseq (>=2.9)
 * perl's Switch module
-* R packages: phyloseq, knitr, phytools, ggplot2, ggplot2, cowplot, rmarkdown
+* R packages: phyloseq, knitr, phytools, ggplot2, ggplot2, cowplot, rmarkdown, hash
 * pandoc
 
 
@@ -40,6 +40,7 @@ Installation instructions:
 				ggplot2
 				cowplot
 				rmarkdown
+				hash
 		* pandoc (sudo apt-get install pandoc)
 
 Requirements (full functionality):
