@@ -3092,14 +3092,14 @@ sub uclust_ref {
 	my $dis = $clustThres/100;
 	$cmd = "";
 	if ($gg eq "gg2011") {
-		$cmd = "pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta | tee -a $err 2>&1";
-        	if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta ) > $time_pwd/time_pick_otus_uclust-ref_$taxon.log 2>&1"; }
+		$cmd = "pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta --enable_rev_strand_match | tee -a $err 2>&1";
+        	if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta --enable_rev_strand_match) > $time_pwd/time_pick_otus_uclust-ref_$taxon.log 2>&1"; }
         } elsif ($gg eq "gg2013") {
-		$cmd = "pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/gg_13_8_otus/rep_set/97_otus.fasta | tee -a $err 2>&1";
-		if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/gg_13_8_otus/rep_set/97_otus.fasta ) > $time_pwd/time_pick_otus_uclust-ref_$taxon.log 2>&1"; }
+		$cmd = "pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/gg_13_8_otus/rep_set/97_otus.fasta --enable_rev_strand_match | tee -a $err 2>&1";
+		if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/gg_13_8_otus/rep_set/97_otus.fasta --enable_rev_strand_match) > $time_pwd/time_pick_otus_uclust-ref_$taxon.log 2>&1"; }
 	} elsif ($gg eq "silva111") {
-		$cmd = "pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/Silva_111_post/rep_set/97_Silva_111_rep_set.fasta | tee -a $err 2>&1";
-		if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/Silva_111_post/rep_set/97_Silva_111_rep_set.fasta ) > $time_pwd/time_pick_otus_uclust-ref-strict_$taxon.log 2>&1"; }
+		$cmd = "pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/Silva_111_post/rep_set/97_Silva_111_rep_set.fasta --enable_rev_strand_match | tee -a $err 2>&1";
+		if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref_$gg -r $db/Silva_111_post/rep_set/97_Silva_111_rep_set.fasta --enable_rev_strand_match) > $time_pwd/time_pick_otus_uclust-ref-strict_$taxon.log 2>&1"; }
 	}
 	system($cmd);
         print LOG $cmd."\n";
@@ -3124,14 +3124,14 @@ sub uclust_ref_strict {
         my $dis = $clustThres/100;
         $cmd = "";
         if ($gg eq "gg2011") {
-                $cmd = "pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta | tee -a $err 2>&1"; 
-                if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta ) > $time_pwd/time_pick_otus_uclust-ref-strict_".$taxon."_".$gg.".log 2>&1"; }
+                $cmd = "pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta --enable_rev_strand_match | tee -a $err 2>&1"; 
+                if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/gg_otus_4feb2011/rep_set/gg_97_otus_4feb2011.fasta --enable_rev_strand_match) > $time_pwd/time_pick_otus_uclust-ref-strict_".$taxon."_".$gg.".log 2>&1"; }
         } elsif ($gg eq "gg2013") {
-                $cmd = "pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/gg_13_8_otus/rep_set/97_otus.fasta | tee -a $err 2>&1";
-                if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/gg_13_8_otus/rep_set/97_otus.fasta ) > $time_pwd/time_pick_otus_uclust-ref-strict_i".$taxon."_".$gg.".log 2>&1"; }
+                $cmd = "pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/gg_13_8_otus/rep_set/97_otus.fasta --enable_rev_strand_match | tee -a $err 2>&1";
+                if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/gg_13_8_otus/rep_set/97_otus.fasta --enable_rev_strand_match) > $time_pwd/time_pick_otus_uclust-ref-strict_i".$taxon."_".$gg.".log 2>&1"; }
         } elsif ($gg eq "silva111") {
-                $cmd = "pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/Silva_111_post/rep_set/97_Silva_111_rep_set.fasta | tee -a $err 2>&1";  
-                if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/Silva_111_post/rep_set/97_Silva_111_rep_set.fasta ) > $time_pwd/time_pick_otus_uclust-ref-strict_".$taxon."_".$gg.".log 2>&1"; }
+                $cmd = "pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/Silva_111_post/rep_set/97_Silva_111_rep_set.fasta --enable_rev_strand_match | tee -a $err 2>&1";  
+                if ($time eq "y") { $cmd = "(time pick_otus.py -m uclust_ref -C -s $dis -i splits_dir/seqs_$gg.fna -o picked_otus_uclust-ref-strict_$gg -r $db/Silva_111_post/rep_set/97_Silva_111_rep_set.fasta --enable_rev_strand_match) > $time_pwd/time_pick_otus_uclust-ref-strict_".$taxon."_".$gg.".log 2>&1"; }
         }
         system($cmd);
         print LOG $cmd."\n";
