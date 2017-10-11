@@ -3955,6 +3955,7 @@ sub beta_div() {
                         $evalue = $minsplit[1];
                         $evalue =~ /(.*)\..*/;
                         $evalue = $1;
+			$evalue =~ s/,//g;
                         print "evalue: $evalue \n";
                         #$cmd = "biom summarize-table -i $otu -o library_stats.txt 2>&1 | tee -a $err";
                 } else {
@@ -3963,6 +3964,7 @@ sub beta_div() {
                         chomp($evalue);
                         $evalue=~ /(.*)\..*/;
                         $evalue = $1;
+			$evalue =~ s/,//g;
                         print "evalue: $evalue \n";
                         $cmd = "per_library_stats.py -i $otu > $out";
                         system($cmd);
