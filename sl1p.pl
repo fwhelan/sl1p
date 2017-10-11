@@ -3486,12 +3486,12 @@ sub filter_otus {
                 print ERR "otu_table_".$taxon."_".$gg.".biom DNE; aborting filter_otus_from_otu_table.py\n";
         }
 	#convert_biom
-        print "convert_biom.py\n";
+        print "convert_biom.py | biom convert\n";
 	my $convert_biom; my $biom_ver; my $biom_ver2;
         if (-e "otu_table_".$taxon."_".$gg."_n1.biom") {
                 $convert_biom = `which biom`;
 		$biom_ver = `biom --version 2>&1`;
-		$biom_ver2 = `biom convert --version`;
+		#$biom_ver2 = `biom convert --version`;
 		chomp($biom_ver);
 		#$biom_ver=~/biom, version (.*)/;
 		#$biom_ver = $1; $biom_ver=~s/\.//g;
@@ -3499,8 +3499,8 @@ sub filter_otus {
                         $cmd = "convert_biom.py -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt -b --header_key=taxonomy --output_metadata_id=\"Consensus Lineage\" 2>&1 | tee -a $err";
                 } elsif ($biom_ver!~/biom,\s*version.*/) {
                         $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt -b --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-                } elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
-			$cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
+                #} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
+		#	$cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
 		} else {
 			$cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
 		}
@@ -3516,8 +3516,8 @@ sub filter_otus {
                         $cmd = "convert_biom.py -i otu_table_".$taxon."_".$gg.".biom -o otu_table_".$taxon."_".$gg.".txt -b --header_key=taxonomy --output_metadata_id=\"Consensus Lineage\" 2>&1 | tee -a $err";
                 } elsif ($biom_ver!~/biom,\s*version.*/) {
                 $cmd ="biom convert -i otu_table_".$taxon."_".$gg.".biom -o otu_table_".$taxon."_".$gg.".txt -b --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-		} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
-                        $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
+		#} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
+                #        $cmd ="biom convert -i otu_table_".$taxon."_".$gg.".biom -o otu_table_".$taxon."_".$gg.".txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
                 } else {
 			$cmd ="biom convert -i otu_table_".$taxon."_".$gg.".biom -o otu_table_".$taxon."_".$gg.".txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
 		}
@@ -3533,8 +3533,8 @@ sub filter_otus {
                         $cmd = "convert_biom.py -i otu_table_".$taxon."_".$gg."_n2.biom -o otu_table_".$taxon."_".$gg."_n2.txt -b --header_key=taxonomy --output_metadata_id=\"Consensus Lineage\" 2>&1 | tee -a $err";
                 } elsif ($biom_ver!~/biom,\s*version.*/) {
                         $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n2.biom -o otu_table_".$taxon."_".$gg."_n2.txt -b --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-		} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
-                        $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
+		#} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
+                #        $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n2.biom -o otu_table_".$taxon."_".$gg."_n2.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
                 } else {
 			$cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n2.biom -o otu_table_".$taxon."_".$gg."_n2.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
 		}
@@ -3759,15 +3759,15 @@ sub removeRoot() {
 	my $convert_biom; my $biom_ver; my $biom_ver2;
 	$convert_biom = `which biom`;
 	$biom_ver = `biom --version 2>&1`;
-	$biom_ver2 = `biom convert --version`;
-        print "convert_biom.py\n";
+	#$biom_ver2 = `biom convert --version`;
+        print "convert_biom.py | biom convert\n";
 	if (-e "otu_table_".$taxon."_".$gg."_n2_noRoot.biom") {
 		if (!$convert_biom) {
 			$cmd = "convert_biom.py -i otu_table_".$taxon."_".$gg."_n2_noRoot.biom -o otu_table_".$taxon."_".$gg."_n2_noRoot.txt -b --header_key=taxonomy --output_metadata_id=\"Consensus Lineage\" 2>&1 | tee -a $err";
 		} elsif ($biom_ver!~/biom,\s*version.*/) {
 			$cmd = "biom convert -i otu_table_".$taxon."_".$gg."_n2_noRoot.biom -o otu_table_".$taxon."_".$gg."_n2_noRoot.txt -b --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-		} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
-                        $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
+		#} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
+                #        $cmd = "biom convert -i otu_table_".$taxon."_".$gg."_n2_noRoot.biom -o otu_table_".$taxon."_".$gg."_n2_noRoot.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
 		} else {
 			$cmd = "biom convert -i otu_table_".$taxon."_".$gg."_n2_noRoot.biom -o otu_table_".$taxon."_".$gg."_n2_noRoot.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
 		}
@@ -3783,8 +3783,8 @@ sub removeRoot() {
                         $cmd = "convert_biom.py -i otu_table_".$taxon."_".$gg."_n1_noRoot.biom -o otu_table_".$taxon."_".$gg."_n1_noRoot.txt -b --header_key=taxonomy --output_metadata_id=\"Consensus Lineage\" 2>&1 | tee -a $err";
                 } elsif ($biom_ver!~/biom,\s*version.*/) {
                         $cmd = "biom convert -i otu_table_".$taxon."_".$gg."_n1_noRoot.biom -o otu_table_".$taxon."_".$gg."_n1_noRoot.txt -b --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-		} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
-                        $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
+		#} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
+                #        $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1_noRoot.biom -o otu_table_".$taxon."_".$gg."_n1_noRoot.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
                 } else {
 			$cmd = "biom convert -i otu_table_".$taxon."_".$gg."_n1_noRoot.biom -o otu_table_".$taxon."_".$gg."_n1_noRoot.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
 		}
@@ -3800,8 +3800,8 @@ sub removeRoot() {
                         $cmd = "convert_biom.py -i otu_table_".$taxon."_".$gg."_noRoot.biom -o otu_table_".$taxon."_".$gg."_noRoot.txt -b --header_key=taxonomy --output_metadata_id=\"Consensus Lineage\" 2>&1 | tee -a $err";
                 } elsif ($biom_ver!~/biom,\s*version.*/) {
                         $cmd = "biom convert -i otu_table_".$taxon."_".$gg."_noRoot.biom -o otu_table_".$taxon."_".$gg."_noRoot.txt -b --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
-		} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
-                        $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_n1.biom -o otu_table_".$taxon."_".$gg."_n1.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
+		#} elsif ($biom_ver2 =~/Version: biom convert 2\.1\.4/) {
+                #        $cmd ="biom convert -i otu_table_".$taxon."_".$gg."_noRoot.biom -o otu_table_".$taxon."_".$gg."_noRoot.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
                 } else {
 			$cmd = "biom convert -i otu_table_".$taxon."_".$gg."_noRoot.biom -o otu_table_".$taxon."_".$gg."_noRoot.txt --to-tsv --header-key=taxonomy --output-metadata-id=\"Consensus Lineage\" 2>&1 | tee -a $err";
 		}
