@@ -2913,15 +2913,22 @@ sub getPrimersFile($) {
 	chomp @in;
 	close SEQIN;
 	$fwd_primer = $in[0];
+	chomp($fwd_primer);
 	$fwd_revcomp_primer = reverse($fwd_primer);
 	$fwd_revcomp_primer =~ tr/ACGTacgt/TGCAtgca/;
+	chomp($fwd_revcomp_primer);
 	$rev_primer = $in[1];
+	chomp($rev_primer);
 	$rev_revcomp_primer = reverse($rev_primer);
 	$rev_revcomp_primer =~ tr/ACGTacgt/TGCAtgca/;
+	chomp($rev_revcomp_primer);
 	$overlap = 1;
 	$splitlib_min = $in[2];
+	chomp($splitlib_min);
 	$splitlib_max = $in[3];
+	chomp($splitlib_max);
 	$barloc = $in[4];
+	chomp($barloc);
 	return($fwd_primer, $rev_primer, $fwd_revcomp_primer, $rev_revcomp_primer, $overlap, $splitlib_min, $splitlib_max, $barloc);
 }
 
