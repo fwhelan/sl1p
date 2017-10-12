@@ -3989,7 +3989,8 @@ sub beta_div() {
                         $evalue1 = $minsplit[1];
                         $evalue1 =~ /(.*)\..*/;
                         $evalue1 = $1;
-                        print "evalue: $evalue1 \n";
+                        $evalue1 =~ s/,//g;
+			print "evalue: $evalue1 \n";
                         #$cmd = "biom summarize-table -i $otu -o library_stats.txt 2>&1 | tee -a $err";
                 } else {
                         print "per_library_stats.py\n";
