@@ -3437,7 +3437,7 @@ sub make_otu_table {
 	my ($clust, $taxon, $gg) = @_;
 	chdir("$time_pwd/picked_otus_".$clust."_$gg");
         print "make_otu_table.py\n";
-        if (-e "seqs_".$gg."_otus.txt") {
+        if (!-z "seqs_".$gg."_otus.txt") {
                 $cmd="make_otu_table.py -i seqs_".$gg."_otus.txt -t ".$taxon."_".$gg."_assigned_taxonomy_tr/rep_set_tax_assignments.txt -o otu_table_".$taxon."_".$gg.".biom 2>&1 | tee -a $err";
                 if ($time eq "y") { $cmd="(time make_otu_table.py -i seqs_".$gg."_otus.txt -t ".$taxon."_".$gg."_assigned_taxonomy_tr/rep_set_tax_assignments.txt -o otu_table_".$taxon."_".$gg.".biom) > $time_pwd/time_make_otu_table_".$taxon.".log 2>&1"; }
                 system($cmd);
@@ -3451,8 +3451,8 @@ sub make_otu_table {
 #			if ($? == -1) { print "command failed: $!\n"; exit; }
 #		}
         } else {
-                print "seqs_".$gg."_otus.txt DNE; aborting make_otu_table.py\n";
-                print ERR "seqs_".$gg."_otus.txt DNE; aborting make_otu_table.py\n";
+                print "seqs_".$gg."_otus.txt DNE or is empty; aborting make_otu_table.py\n";
+                print ERR "seqs_".$gg."_otus.txt DNE or is empty; aborting make_otu_table.py\n";
         }
 	chdir('..');
 }
