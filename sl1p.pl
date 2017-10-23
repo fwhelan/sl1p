@@ -1071,6 +1071,7 @@ print"###############################################################\n";
 print LOG "###############################################################\n";
 print LOG "#Clip with cutadapt\n";
 print LOG "###############################################################\n";
+my $illumina;
 for($a = 0; $a < $#fofns+1; $a++) {
 	open (FOFN, "<", $fofns[$a]) or die "$!";
 	my @files = <FOFN>;
@@ -1091,16 +1092,19 @@ for($a = 0; $a < $#fofns+1; $a++) {
 		}
 		$filecount += 1;
 		#Ensure Illumina File Naming Scheme
-		if ($in=~/((.*?_[ACGT]*?_L\d{3}_R\d_\d{3})\.fastq(.gz|))$/) {
+		if ($in=~/((.*?_[ACGT]*?_L\d{3}_R\d_\d{3})\.fastq(.gz|))$/) { #old scheme
 			#print $in."\n";
 			#$in = $1;
 			#print $in."\n";
 			#$out = "pandaseq_logs$a/$in";
+			$illumina = "old";
+		} elsif ($in=~/((.*?_S\d+_L\d{3}_R\d_\d{3})\.fastq(.gz|))$/) { #new scheme
+			$illumina = "new";
 		} else {
 			print "Error: $in is not a properly formatted Illumina .fastq file- aborting.\n";
 			exit;
 		}
-		$in=~/.*\/(.*?_[ACGT]*?_L\d{3}_R\d_\d{3}\.fastq(.gz|))$/;
+		$in=~/.*\/(.*?_.*?_L\d{3}_R\d_\d{3}\.fastq(.gz|))$/;
 		my $path = $1;
 		print $path."\n";
 		my $out = "pandaseq_logs$a/$path";
@@ -1140,7 +1144,7 @@ print LOG "###############################################################\n";
 my @sample_names = (); my @orig_reads = (); my @post_pandaseq = (); my @post_cutadapt = (); my @post_sickle = ();
 my $samplef; my $sampler; my $barcodef; my $barcoder;
 my $fwd; my $rev;
-my $barco;
+my $barco; my $head;
 for($b = 0; $b < $#fofns+1; $b++) {
 	my $dir = "pandaseq_logs$b";
 	chdir($dir);
@@ -1162,15 +1166,37 @@ for($b = 0; $b < $#fofns+1; $b++) {
 	my $i = 0;
 	while ($i < $#data+1) {
 		$samplef = $sampler = $barcodef = $barcoder = "";
+		$head = "";
 		$fwd = $data[$i];
 		chomp($fwd);
 		$rev = $data[$i+1];
 		chomp($rev);
 		$i += 2;
-		$fwd=~/(([^\/]+?)_([ACGT]+)_L001_R1_001\.fastq(.gz|))/;
-		$fwd = $1 and $samplef = $2 and $barcodef = $3;
-		$rev=~/(([^\/]+?)_([ACGT]+)_L001_R2_001\.fastq(.gz|))/;
-		$rev = $1 and $sampler = $2 and $barcoder = $3;
+		if ($illumina eq "old") {
+			$fwd=~/(([^\/]+?)_([ACGT]+)_L001_R1_001\.fastq(.gz|))/;
+			$fwd = $1 and $samplef = $2 and $barcodef = $3;
+			$rev=~/(([^\/]+?)_([ACGT]+)_L001_R2_001\.fastq(.gz|))/;
+			$rev = $1 and $sampler = $2 and $barcoder = $3;
+		} elsif ($illumina eq "new") {
+			$fwd=~/(([^\/]+?)_S\d+_L001_R1_001\.fastq(.gz|))/;
+			$fwd = $1 and $samplef = $2;
+			if ($3=~/gz/) {
+				$head = `gzip -cd $fwd | head -n 1`;
+			} else {
+				$head = `head -n 1 $fwd`;
+			}
+			$head=~/\@.+:\d+:.+:\d+:\d+:\d+:\d+ 1:N:0:([ACGT]+)\+[ACGT]+/;
+			$barcodef = $1;
+			$rev=~/(([^\/]+?)_S\d+_L001_R2_001\.fastq(.gz|))/;
+			$rev = $1 and $sampler = $2;
+			if ($3=~/gz/) {
+				$head = `gzip -cd $rev | head -n 1`;
+			} else {
+				$head = `head -n 1 $rev`;
+			}
+			$head=~/\@.+:\d+:.+:\d+:\d+:\d+:\d+ 2:N:0:([ACGT]+)\+[ACGT]+/;
+			$barcoder = $1;
+		}
 		print $fwd."\n";
 		print "$samplef\t$barcodef\n";
 		#Check
@@ -1442,14 +1468,22 @@ for($c = 0; $c < $#fofns+1; $c++) {
 	while ($i < $#data+1) {
 		$line = $data[$i];
 		#$sub = $barco * -1 + 1;
-		$barcode = substr $line, -7;
+		if ($illumina eq "old") {
+			$barcode = substr $line, -7;
+		} elsif ($illumina eq "new") {
+			$barcode = substr $line, -14, 6;
+		}
 		chomp($barcode);
 		if ($add ne "") {
 			$barcode = $add.$barcode;
 		}
 		chomp($line);
 		#$sub = $barco * -1;
-		$line = substr $line, 0, -6;
+		if ($illumina eq "old") {
+			$line = substr $line, 0, -6;
+		} elsif ($illumina eq "new") {
+			$line = substr $line, 0, -13;
+		}
 		print OUT $line.$barcode."\n";
 		$i += 1;
 		$line = $data[$i];
