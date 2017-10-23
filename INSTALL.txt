@@ -25,6 +25,7 @@ Installation instructions:
                 perl SETUP.pl
         -Install & unzip any necessary databases in SL1P_DB as explained here http://qiime.org/home_static/dataFiles.html:
                 * Greengenes 2011 (default)
+			**NOTE: if using the 2011 release, you will have to additionally download the greengenes_tax_rdp_train_genus.txt file from here: https://groups.google.com/forum/#!searchin/qiime-forum/Tony$20Walters$20after$3A2012$2F02$2F01$20AND$20before$3A2012$2F03$2F01%7Csort:date/qiime-forum/ViDqSuCdmbI/vqOnI6BIrk4J
                 * Greengenes 2013 (13_8)
                 * Silva 111 
 	-Additional requirements (default settings):
