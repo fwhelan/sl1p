@@ -10,3 +10,12 @@ For information on installation and requirements, see `INSTALL.txt`.
 For a comprehensive manual of sl1p, see `README.txt`. For any additional inquires or to report any bugs or errors, please use the Issues tab.
 
 Citation information: Whelan FJ & Surette MG. 'A comprehensive evaluation of the sl1p pipeline for 16S rRNA gene sequencing analysis.' (2017) Microbiome. https://doi.org/10.1186/s40168-017-0314-2
+
+Please note that sl1p wraps third party software into its pipeline. If you cite sl1p, you should also cite the tools that it uses. These can vary according to the parameters used; for the default parameters, sl1p uses:
+-cutadapt
+-sickle
+-pandaseq
+-AbundantOTU+
+-uchime
+-Qiime
+-R's phyloseq, ggplot2, & getopt packages
