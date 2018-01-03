@@ -13,9 +13,15 @@ Citation information: Whelan FJ & Surette MG. 'A comprehensive evaluation of the
 
 Please note that sl1p wraps third party software into its pipeline. If you cite sl1p, you should also cite the tools that it uses. These can vary according to the parameters used; for the default parameters, sl1p uses:
 -cutadapt
+
 -sickle
+
 -pandaseq
+
 -AbundantOTU+
+
 -uchime
+
 -Qiime
+
 -R's phyloseq, ggplot2, & getopt packages
