@@ -81,7 +81,17 @@ for (my $i = 1; $i <= $numruns; $i++) {
 		print "Use sl1p.pl -h for more details\n";
         	print "\nExiting....\n";
                 exit;
-        }    
+        }
+	#ensure that file has >=2 lines
+	my $cmd = `wc -l $fofns[$i-1]`;
+	$cmd=~/(\d)+.*/; $cmd=$1;
+	if ($cmd < 2) {
+		print "Error: fofn file $fofns[$i-1] doesn't have >=2 lines. Paired-end reads are expected.\n";
+		print $usage;
+		print "\nPlease see the readme for more details\n";
+		print "\nExiting...\n";
+		exit;
+	} 
 }
 #Check to be sure project name exists
 my $proj;
