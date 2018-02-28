@@ -26,6 +26,10 @@ Contents
 # What's new						#
 # ===================================================== #
 -----------
+Version 4.3
+-----------
+-fixed a bug which prevented non .fastq.gz to be properly checked for FASTQ format upon startup (issue #18)
+-----------
 Version 4.2
 -----------
 -updates to the v34 seq length range due to mathematical error; old: 431-531bp, new: 380-480bp

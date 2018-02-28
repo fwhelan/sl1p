@@ -1250,6 +1250,7 @@ for($b = 0; $b < $#fofns+1; $b++) {
 		} else {
 			$lines = `wc -l $fwd`;
 		}
+		$lines =~/(\d+).*/; $lines = $1;
 		$lines = $lines/4;
 		push @orig_reads, $lines;
 		#Save sample name, original, and post pandaseq number of reads
