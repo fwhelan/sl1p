@@ -39,5 +39,5 @@ print "make sickle\n";
 chdir('sickle-master');
 `make`;
 chdir('..');
-`mv sickle-master/ sickle/`;
+`mv sickle-master/ sickle`;
 chdir('..');
