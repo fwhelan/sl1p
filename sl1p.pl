@@ -22,7 +22,7 @@ if ((! defined $bin) && (! defined $db)) {
 #Usage: sl1p.pl <# of runs> <fofn for each run> <projectname>
 #		e.g. sl1p.pl 2 fofn1.txt fofn2.txt Fiona_Proj
 
-my $usage =  "\nUsage: sl1p.pl <# of runs> <fofn for each run> <projectname> [-r region] [-s seq info file] [-b barcode loca     tion] [-q quality filter] [-d taxonomy database] [-p OTU picking algorithm] [-c clustering threshold] [-l linkage] [-m chimera checking] [-t taxonomic assignment method] [-x timed results] [-u CPU threads] [-f force overwrite] \n";
+my $usage =  "\nUsage: sl1p.pl <# of runs> <fofn for each run> <projectname> [-r region] [-s seq info file] [-b barcode location] [-q quality filter] [-k keep filtered output] [-d taxonomy database] [-p OTU picking algorithm] [-c clustering threshold] [-l linkage] [-m chimera checking] [-t taxonomic assignment method] [-x timed results] [-u CPU threads] [-f force overwrite] \n";
 
 my $help = "\nWill automate sequence \"processing\": raw v3 sequences off the sequencer through to QIIME analysis after asking a series of questions as to the clustering and taxonomic assignment methods etc. the user would like to use. Defaults are suggested.\n\nAll .fastq files must be in the directory that you call the script from.  Multiple runs must be split into multiple fofn files.\n
 	-r which region of the 16S rRNA gene sequenced; if other, -s must be defined [v3/v34/v4/other] (default: v3)
