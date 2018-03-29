@@ -1000,7 +1000,7 @@ print LOG "###############################################################\n";
 my $exc;
 $exc = `$bin/sickle/sickle --version`;
 if ($exc!~/sickle version/) {
-	print "sickle is not installed; please run `perl SETUP.py` to install.\n";
+	print "sickle is not installed; please run `perl SETUP.pl` to install.\n";
 	exit;
 }
 #$gg;
@@ -1023,7 +1023,7 @@ if (($gg eq "gg2011") || ($gg eq "all")) {
 #$clust; #$clustThres; #$linkage;
 if (($clust eq "abundantotu") || ($clust eq "all")) {
 	if (! -e "$bin/AbundantOTU+0.93b/bin/AbundantOTU+") {
-		print "AbundantOTU+0.93b is not installed; please run `perl SETUP.py` to install or choose a different OTU picking algorithm.\n";
+		print "AbundantOTU+0.93b is not installed; please run `perl SETUP.pl` to install or choose a different OTU picking algorithm.\n";
 		exit;
 	}
 } elsif (($clust eq "uclust") || ($clust eq "cdhit") || ($clust eq "uclust-ref") || ($clust eq "uclust-ref-strict")  || ($clust eq "blast") || ($clust eq "all")) {
@@ -1034,7 +1034,7 @@ if (($clust eq "abundantotu") || ($clust eq "all")) {
 	}
 } elsif (($clust eq "dnaclust") || ($clust eq "all")) {
 	if (! -e "$bin/dnaclust_linux_release3/dnaclust") {
-		print "dnaclust is not installed; please run `perl SETUP.py` to install or choose a different OTU picking algorithm.\n";
+		print "dnaclust is not installed; please run `perl SETUP.pl` to install or choose a different OTU picking algorithm.\n";
 		exit;
 	}
 } elsif (($clust eq "mothur") || ($clust eq "all")) {
