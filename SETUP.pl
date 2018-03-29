@@ -9,7 +9,7 @@ if(!(exists $ENV{'SL1P_BIN'} && defined $ENV{'SL1P_BIN'})) {
 }
 
 my $bin = $ENV{'SL1P_BIN'};
-chdir($bin);
+chdir "$bin";
 #install local cutadapt
 print "[sl1p]###################INSTALLING CUTADAPT v1.8.1###################\n";
 if (! -e 'cutadapt-1.8.1.tar.gz') {
@@ -26,7 +26,7 @@ print "[sl1p]tar -zxvf get.php?justdoit=yes&software=AbundantOTUplus0.93b.tar.gz
 `tar -zxvf get.php?justdoit=yes\\&software=AbundantOTUplus0.93b.tar.gz`;
 chdir('AbundantOTU+0.93b');
 `./install`;
-chdir('..');
+chdir "..";
 #install local sickle
 print "[sl1p]###################INSTALLING SICKLE###################\n";
 if (! -e 'master.zip') {
@@ -36,8 +36,8 @@ if (! -e 'master.zip') {
 print "[sl1p]unzip master.zip\n";
 `unzip master.zip`;
 print "make sickle\n";
-chdir('sickle-master');
+chdir "sickle-master";
 `make`;
-chdir('..');
+chdir "..";
 `mv sickle-master/ sickle`;
-chdir('..');
+chdir "..";
