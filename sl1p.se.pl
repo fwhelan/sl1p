@@ -87,7 +87,7 @@ for (my $i = 1; $i <= $numruns; $i++) {
         }
 	#ensure that file has >=1 line
 	my $cmd = `wc -l $fofns[$i-1]`;
-	$cmd=~/(\d)+.*/; $cmd=$1;
+	$cmd=~/^(\d+).*$/; $cmd=$1;
 	if ($cmd < 1) {
 		print "Error: fofn file $fofns[$i-1] doesn't have >=1 line. Single-end reads are expected in a format identical to R1 sequences off of a MiSeq.\n";
 		print $usage;
