@@ -84,7 +84,7 @@ for (my $i = 1; $i <= $numruns; $i++) {
         }
 	#ensure that file has >=2 lines
 	my $cmd = `wc -l $fofns[$i-1]`;
-	$cmd=~/(\d)+.*/; $cmd=$1;
+	$cmd=~/^(\d+).*$/; $cmd=$1;
 	if ($cmd < 2) {
 		print "Error: fofn file $fofns[$i-1] doesn't have >=2 lines. Paired-end reads are expected.\n";
 		print $usage;
@@ -1646,8 +1646,6 @@ if ($splits) {
 	#Record sequence information for log_seq_info.txt
 	for ($a = 0; $a <= $#sample_names; $a++) {
 		$cmd = `grep '^$sample_names[$a]\\s' splits_dir/split_library_log.txt | tail -n 1`;
-		#print "grep '^$sample_names[$a]\\s' splits_dir/split_library_log.txt | tail -n 1\n";
-		#$cmd=~/.*?\t(\d+).*?/;
 		$cmd=~/$sample_names[$a]\t(\d+).*?/;
 		push @post_splitlib, $1;
 	}
