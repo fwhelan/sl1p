@@ -152,27 +152,29 @@ sl1p (pronounced "slip") is a tool designed to process 16S rRNA paired-end Illum
 # ===================================================== #
 sl1p requires a File Of File Names (FOFN) file which lists the filenames of the paired-end fastq files, split by sample, of the samples that you wish to run through the pipeline. These filenames must be one file per line, and pairs must be in order (alphabetical order is recommended). Any overlapping barcodes (for e.g., from 2 separate Illumina sequencing runs) must be in different FOFN files.
 
-Usage: sl1p.pl <# of runs> <FOFN for each run> <PROJNAME> [-r region] [-b barcode location] [-d taxonomy database] [-p OTU picking algorithm] [-l linkage] [-t taxonomic assignment method] [-f force overwrite]
-
-    where the # of FOFNs reflects how many individual FOFN files are input to sl1p.pl
+Usage: sl1p.pl <# of runs> <fofn for each run> <projectname> [-r region] [-s seq info file] [-b barcode location] [-q quality filter] [-k keep filtered output] [-d taxonomy database] [-p OTU picking algorithm] [-c clustering threshold] [-l linkage] [-m chimera checking] [-t taxonomic assignment method] [-x timed results] [-u CPU threads] [-f force overwrite]
               FOFN for each run lists the name of each FOFN file, split by a blank space (no commas); the order of  these files does not matter
               PROJNAME is a project name of your choosing. This name will be used to identify the fasta and map files (see below). Note that special characters are not allowed in project names.
-	      -r which region of the 16S rRNA gene sequenced [v3/v34] (default: v3)
-	      -b location of the sequence barcode [fwd/rev/mixed] (default: fwd) *note: setting -b is not necessary when -r other is being used
-	      -d the greengenes database that you would like to use for taxonomic assignment [gg_2011/gg_2013] (default: gg2011)
-	      -p OTU picking algorithm [abundantotu/uclust/cdhit/dnaclust/uclust-ref/uclust-ref-strict/mothur/blast/uparse/all] (default: abundantotu)
-	      -c OTU picking clustering threshold [0-100] (default: 97)
-	      -l the linkage method to use with mothur [nearest/average/furthest] (default: average)
-	      -m whether the user would like to employ chimera checking [y/n] (default: y
-	      -t the taxonomic assignment method [blast/rdp/rdp-training/all] (default: rdp-training)
-	      -x do you want timed results for each step of the analysis [y/n] (default: n)
-	      -u how many CPU threads you would like to envoke [0-9] (default: 1)
-	      -f force overwrite .fna, map, picked_otu, and split_dir files from previous runs [y/n] (default: n)
+	-r which region of the 16S rRNA gene sequenced; if other, -s must be defined [v3/v34/v4/other] (default: v3)
+	-s a sequence information file including primers, and min and max sequence length (default: none)
+	-b location of the sequence barcode [fwd/rev/mixed] (default: fwd)
+	-q the quality threshold for filtering (default: 30)
+	-k keep .fastq output from quality filtering process [y/n] (default:n)
+	-d the greengenes database that you would like to use for taxonomic assignment [gg2011/gg2013/silva111/all] (default: gg2011)
+	-p OTU picking algorithm [abundantotu/uclust/cdhit/dnaclust/uclust-ref/uclust-ref-strict/mothur/blast/uparse/all] (default: abundantotu)
+	-c OTU picking clustering threshold [0-100] (default: 97)
+	-l the linkage method to use with mothur [nearest/average/furthest/all] (default: average)
+	-m whether the user would like to employ chimera checking [y/n] (default: y)
+	-t the taxonomic assignment method [blast/rdp-training/all] (default: rdp-training)
+	-e certainty cutoff for taxonomic assignment as designed by Qiime [0-1] (default: 0.5)
+	-x do you want timed OTU picking and overall results [y/n\ (default: n)
+	-u how many CPU threads you would like to envoke [0-9] (default: 1)
+	-f force overwrite .fna, map, picked_otu, and split_dir files from previous runs [y/n] (default: n)
 
 # ===================================================== #
 # User Input						#
 # ===================================================== #
-sl1p takes the raw FWD and REV .fastq files produced by Illumina sequencing.  These files must all be in the same directory - the directory sl1p is called from - and must end in the standard .fastq.  Additionally, a File Of File Names (FOFN) file must also be present in the same directory.  For example, if the user has 2 samples across 4 files, Sample1_R1_L001.fastq Sample1_R2_L001.fastq Sample2_R1_L001.fastq Sample2_R2_L001.fastq, these file names should be in the fofn file, each on their own line, such as:
+sl1p takes the raw FWD and REV .fastq files produced by Illumina sequencing.  These files must all be in the same directory sl1p is called from (or the full path to the files must be specified in the corresponding FOFN file) and must end in .fastq or .fastq.gz.  Additionally, a File Of File Names (FOFN) file must also be present in the same directory.  For example, if the user has 2 samples across 4 files, Sample1_R1_L001.fastq Sample1_R2_L001.fastq Sample2_R1_L001.fastq Sample2_R2_L001.fastq, these file names should be in the fofn file, each on their own line, such as:
 Sample1_R1_L001.fastq
 Sample1_R2_L001.fastq
 Sample2_R1_L001.fastq
@@ -180,16 +182,11 @@ Sample2_R2_L001.fastq
 Please ensure that there are no blank lines at the end of your FOFN file and that they appear in alphabetical order (it is essential that the R1 file directly preceeds the R2 file for a given sample).
 The easiest way to create an FOFN is to pipe a list of all .fastq files in your directory into a text file. For example:
 $ls *.fastq > FOFN.txt
-
-Usage: sl1p.pl <# of FOFNs> <FOFN for each run> <PROJNAME>
-where the # of FOFNs reflects how many individual FOFN files are input to sl1p.pl
-FOFN for each run lists the name of each FOFN file, split by a blank space (no commas); the order of  these files does not matter
-PROJNAME is a project name of your choosing. This name will be used to identify the fasta and map files (see below).
-<<expand on this once I change it; omitting mention of questions now since they'll be gone soon>>
+There cannot be 2 unique samples that use the same barcode in the same FOFN file. If your project spans sequencing runs or contains overlapping barcodes, please use multiple FOFN files as input into sl1p.
 
 Sequence information file
 -------------------------
-If the user wishes to use primers other than those for the v3 and v34 region, they can be provided to sl1p in the form of a sequence information file. This file contains:
+If the user wishes to use primers other than those for the v3, v34, or v4 regions, they can be provided to sl1p in the form of a sequence information file. This file contains:
 line 1: the forward primer sequence
 line 2: the reverse primer sequence
 line 3: the minimum sequence length included in the analysis
@@ -237,15 +234,13 @@ qiime_params.txt -> a parameter file generated by sl1p for input into QIIME for 
 # ===================================================== #
 # Required software					#
 # ===================================================== #
-sl1p requires that QIIME (1.6.0 - 1.8.0) is installed on the system, with the optional RDP Classifier. See http://qiime.org/install/install.html for details.
+sl1p requires that QIIME (1.6.0 - 1.9.0) is installed on the system, with the optional RDP Classifier. See http://qiime.org/install/install.html for details. Currently, sl1p is not compatible with QIIME 2.0.
 All other necessary software to run sl1p with default settings can be installed via sh setup_pipeline.sh. These tools and the version's that sl1p has been tested with are listed below for completeness:
         Greengenes database (version 4Feb2011 and May2013)
         pandaseq 2.7
         AbundantOTU+
         cutadapt 1.4.2
-<<the above isn't strickly true at the moment>>
-Once this setup script has been run successfully, the user has the option to install additional software in order to give sl1p full functionality. sl1p was designed in order to allow the user the most choice of softwares possible; the full functionality thus relies on multiple different software and tools. These tools can be installed via <<add a separate install script for all of these>> and are listed below for completeness:
-<<list all tools here>>
+Once this setup script has been run successfully, the user has the option to install additional software in order to give sl1p full functionality. sl1p was designed in order to allow the user the most choice of softwares possible; the full functionality thus relies on multiple different software and tools. These tools can be installed by hand by the user.
 
 # ===================================================== #
 # Default Processing					#
