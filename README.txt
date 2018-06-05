@@ -158,7 +158,7 @@ Usage: sl1p.pl <# of runs> <FOFN for each run> <PROJNAME> [-r region] [-b barcod
               FOFN for each run lists the name of each FOFN file, split by a blank space (no commas); the order of  these files does not matter
               PROJNAME is a project name of your choosing. This name will be used to identify the fasta and map files (see below). Note that special characters are not allowed in project names.
 	      -r which region of the 16S rRNA gene sequenced [v3/v34] (default: v3)
-	      -b location of the sequence barcode [fwd/rev/mixed] (default: fwd)
+	      -b location of the sequence barcode [fwd/rev/mixed] (default: fwd) *note: setting -b is not necessary when -r other is being used
 	      -d the greengenes database that you would like to use for taxonomic assignment [gg_2011/gg_2013] (default: gg2011)
 	      -p OTU picking algorithm [abundantotu/uclust/cdhit/dnaclust/uclust-ref/uclust-ref-strict/mothur/blast/uparse/all] (default: abundantotu)
 	      -c OTU picking clustering threshold [0-100] (default: 97)
