@@ -27,7 +27,7 @@ my $usage =  "\nUsage: sl1p.pl <# of runs> <fofn for each run> <projectname> [-r
 my $help = "\nWill automate sequence \"processing\": raw v3 sequences off the sequencer through to QIIME analysis after asking a series of questions as to the clustering and taxonomic assignment methods etc. the user would like to use. Defaults are suggested.\n\nAll .fastq files must be in the directory that you call the script from.  Multiple runs must be split into multiple fofn files.\n
 	-r which region of the 16S rRNA gene sequenced; if other, -s must be defined [v3/v34/v4/other] (default: v3)
 	-s a sequence information file including primers, and min and max sequence length (default: none)
-	-b location of the sequence barcode [fwd/rev/mixed] (default: fwd)
+	-b location of the sequence barcode [fwd/rev/mixed] (default: fwd) *note: setting -b is not necessary when -r other is used
 	-q the quality threshold for filtering (default: 30)
 	-k keep .fastq output from quality filtering process [y/n] (default:n)
 	-d the greengenes database that you would like to use for taxonomic assignment [gg2011/gg2013/silva111/all] (default: gg2011)
