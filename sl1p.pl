@@ -1262,6 +1262,7 @@ for($b = 0; $b < $#fofns+1; $b++) {
 		$cmd = `bzgrep \"STAT\\sOK\" $pandalog | tail -n 1`;
 		$cmd =~/.*\t(\d*)$/;
 		push @post_pandaseq, $1;
+		`cp $fastq $fastq.postpandaseq.fastq`;
 		#Delete any reads that still have Illumina sequencing primers in them.
 		#delete reads with the binding site for the Illumina sequencing primers, V3_F primer; -O 5 came from research
         	print LOG "$bin/cutadapt-1.8.1/bin/cutadapt -f fastq -e 0 -n 1 -O 5 -m 0 -a acactctttccctacacgacgctcttccgatct --discard-trimmed -o tmp.fa $fastq 2>&1 | tee -a $err\n";
@@ -1333,6 +1334,7 @@ for($b = 0; $b < $#fofns+1; $b++) {
 		print LOG "cat ../temp.txt >> $err\n";
 		`cat ../temp.txt >> $err`;
 		`rm ../temp.txt`;
+		`cp $fastq $fastq.postcutadapt.fastq`;
 		print LOG "mv tmp.fa $fastq\n";
 		`mv tmp.fa $fastq`;
         	push @post_cutadapt, $left;
@@ -1353,7 +1355,7 @@ for($b = 0; $b < $#fofns+1; $b++) {
 		$cmd = "cat tmp.fa >> $fast";
 		print LOG $cmd."\n";
 		system($cmd);
-		`rm tmp.fa`;
+		`mv tmp.fa $fastq.postsickle.fastq`;
 		#Cat log results to $err
 		print LOG "cat ../temp.txt >> $err\n";
 		`cat ../temp.txt >> $err`;
