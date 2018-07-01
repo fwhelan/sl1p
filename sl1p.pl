@@ -2913,7 +2913,7 @@ sub getPrimers($$) {
                         } elsif ($region eq "v4") {
 				$fwd_primer = "GTGYCAGCMGCCGCGGTAA";
 				$rev_primer = "GGACTACNVGGGTWTCTAAT";
-				$fwd_revcomp_primer = "TTACCGCGGCKGCTCRCAC";
+				$fwd_revcomp_primer = "TTACCGCGGCKGCTGRCAC";
 				$rev_revcomp_primer = "ATTAGAWACCCBNGTAGTCC";
 				$overlap = 1;
 				#Length of amplicon is expected to be 275bp (515F to 806R with a 16bp forward primer)
